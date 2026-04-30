@@ -129,47 +129,66 @@ def home():
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
 
+    # -------- GET (open page) --------
     if request.method == "GET":
         branch = request.args.get("branch")
         year = request.args.get("year")
         subject = request.args.get("subject")
 
-        return render_template("upload.html",
-                               branch=branch,
-                               year=year,
-                               subject=subject)
-    if "user_id" not in session:
-        return redirect("/")
-    file = request.files.get("file")
-    title = request.form.get("title")
-    branch = request.form.get("branch")
-    year = request.form.get("year")
-    subject = request.form.get("subject")
-    if not file or not title:
-        return "Missing file or title"
-    upload_result = cloudinary.uploader.upload(file)
-    file_path = upload_result.get("secure_url")
-    if file_path:
+        return render_template(
+            "upload.html",
+            branch=branch,
+            year=year,
+            subject=subject
+        )
+
+    # -------- POST (upload file) --------
+    if request.method == "POST":
+
+        if "file" not in request.files:
+            return "No file uploaded"
+
+        file = request.files["file"]
+
+        if file.filename == "":
+            return "No file selected"
+
+        try:
+            # Upload to Cloudinary
+            result = cloudinary.uploader.upload(file, resource_type="auto")
+            file_url = result["secure_url"]
+
+        except Exception as e:
+            return f"Upload failed: {str(e)}"
+
+        # Get form data
+        title = request.form.get("title")
+        subject = request.form.get("subject")
+        branch = request.form.get("branch")
+        year = request.form.get("year")
+
+        # Save to DB
         conn = get_db()
         cur = conn.cursor()
+
         cur.execute("""
-        INSERT INTO notes (title, subject, branch, year, file_path, uploaded_by)
-        VALUES (%s,%s,%s,%s,%s,%s)
+            INSERT INTO notes (title, subject, branch, year, file_path, uploaded_by)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """, (
             title,
             subject,
             branch,
             year,
-            file_path,
-            session["user_id"]
-        ))  
+            file_url,
+            session.get("user_id")
+        ))
+
         conn.commit()
         cur.close()
         conn.close()
 
-        return redirect("/home")
-
-    return render_template("upload.html")
+        # ✅ REDIRECT BACK TO NOTES PAGE (VERY IMPORTANT)
+        return redirect(f"/subjects/{branch}/{year}/{subject}")
 
 
 subjects_data = {
