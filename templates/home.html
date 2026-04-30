@@ -1,44 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1 class="university-heading">🎓 GMR Notes Hub</h1>
+<h2>Select Branch</h2>
 
-<h2>Select Branch & Year</h2>
-
-<div class="branch-grid">
-
-<!-- CSE -->
-<a href="/subjects/CSE/2" class="branch-card">CSE 2nd Year</a>
-<a href="/subjects/CSE/3" class="branch-card">CSE 3rd Year</a>
-<a href="/subjects/CSE/4" class="branch-card">CSE 4th Year</a>
-
-<!-- ECE -->
-<a href="/subjects/ECE/2" class="branch-card">ECE 2nd Year</a>
-<a href="/subjects/ECE/3" class="branch-card">ECE 3rd Year</a>
-<a href="/subjects/ECE/4" class="branch-card">ECE 4th Year</a>
-
-<!-- EEE -->
-<a href="/subjects/EEE/2" class="branch-card">EEE 2nd Year</a>
-<a href="/subjects/EEE/3" class="branch-card">EEE 3rd Year</a>
-
-<!-- MECH -->
-<a href="/subjects/MECH/2" class="branch-card">MECH 2nd Year</a>
-<a href="/subjects/MECH/3" class="branch-card">MECH 3rd Year</a>
-<a href="/subjects/MECH/4" class="branch-card">MECH 4th Year</a>
-
-<!-- CIVIL -->
-<a href="/subjects/CIVIL/3" class="branch-card">CIVIL 3rd Year</a>
-
-<!-- IT -->
-<a href="/subjects/IT/2" class="branch-card">IT 2nd Year</a>
-<a href="/subjects/IT/3" class="branch-card">IT 3rd Year</a>
-<a href="/subjects/IT/4" class="branch-card">IT 4th Year</a>
-
-<!-- 1st Year Common -->
-<a href="/subjects/COMMON/1" class="first-year-card">
-✨ 1st Year (Common for All)
-</a>
-
+<div class="grid">
+    <a href="/branch/CSE" class="card">CSE</a>
+    <a href="/branch/ECE" class="card">ECE</a>
+    <a href="/branch/EEE" class="card">EEE</a>
+    <a href="/branch/MECH" class="card">MECH</a>
+    <a href="/branch/CIVIL" class="card">CIVIL</a>
+    <a href="/branch/IT" class="card">IT</a>
 </div>
 
 {% endblock %}

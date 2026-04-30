@@ -1,15 +1,14 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<h2>{{ branch }} - Year {{ year }} Subjects</h2>
+<h2>{{ branch }} - Year {{ year }}</h2>
 
-<div class="notes-grid">
-    {% for subject in subjects %}
-        <div class="note-card">
-            <div class="note-title">{{ subject }}</div>
-        </div>
-    {% endfor %}
+<div class="grid">
+{% for subject in subjects %}
+    <a href="/notes/{{ branch }}/{{ year }}/{{ subject }}" class="card">
+        {{ subject }}
+    </a>
+{% endfor %}
 </div>
 
 {% endblock %}

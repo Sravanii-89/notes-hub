@@ -365,3 +365,126 @@ h1, h2, h3, h4, h5, h6, p {
     padding: 20px;
     border-radius: 15px;
 }
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background: rgba(0,0,0,0.3);
+}
+
+.navbar a {
+    color: white;
+    margin-right: 15px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* CONTAINER */
+.container {
+    padding: 30px;
+}
+
+/* GRID */
+.branch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+/* CARD */
+.branch-card {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: bold;
+    transition: 0.3s;
+    text-decoration: none;
+    color: white;
+}
+
+.branch-card:hover {
+    background: #4a6cf7;
+    transform: translateY(-5px);
+}
+
+/* SUBJECT CARDS */
+.subject-card {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* LOGIN / REGISTER */
+.auth-box {
+    max-width: 400px;
+    margin: auto;
+    background: white;
+    color: black;
+    padding: 30px;
+    border-radius: 15px;
+}
+
+.auth-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.auth-box button {
+    width: 100%;
+    padding: 10px;
+    background: #4a6cf7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+}
+
+/* UPLOAD */
+.upload-box {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    color: black;
+    padding: 30px;
+    border-radius: 15px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.card:hover {
+    background: #4a6cf7;
+    transform: translateY(-5px);
+}

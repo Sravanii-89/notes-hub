@@ -128,14 +128,15 @@ def home():
 # ---------- UPLOAD ----------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
-    if "user_id" not in session:
-        return redirect("/")
 
     if request.method == "POST":
         file = request.files["file"]
 
-        result = cloudinary.uploader.upload(file, resource_type="auto")
-        file_url = result["secure_url"]
+        # ✅ allow only PDF
+        if not file.filename.endswith(".pdf"):
+            return "Only PDF allowed!"
+
+        result = cloudinary.uploader.upload(file, resource_type="raw")
 
         conn = get_db()
         cur = conn.cursor()
@@ -148,7 +149,7 @@ def upload():
             request.form["subject"],
             request.form["branch"],
             request.form["year"],
-            file_url,
+            result["secure_url"],
             session["user_id"]
         ))
 
@@ -159,6 +160,8 @@ def upload():
         return redirect("/home")
 
     return render_template("upload.html")
+
+
 subjects_data = {
 
 # ---------- CSE ----------
@@ -344,5 +347,44 @@ subjects_data = {
 def subjects(branch, year):
     subjects = subjects_data.get(branch, {}).get(year, [])
     return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
+
+# ---------- BRANCH PAGE ----------
+@app.route("/branch/<branch>")
+def branch_page(branch):
+    return render_template("years.html", branch=branch)
+
+
+# ---------- YEAR PAGE ----------
+@app.route("/year/<branch>/<year>")
+def year_page(branch, year):
+    subjects = subjects_data.get(branch, {}).get(year, [])
+    return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
+
+
+# ---------- NOTES PAGE ----------
+@app.route("/notes/<branch>/<year>/<subject>")
+def notes(branch, year, subject):
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute("""
+    SELECT title, file_path FROM notes
+    WHERE branch=%s AND year=%s AND subject=%s
+    """, (branch, year, subject))
+
+    notes = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template("notes.html",
+                           notes=notes,
+                           branch=branch,
+                           year=year,
+                           subject=subject)
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
