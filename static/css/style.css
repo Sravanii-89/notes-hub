@@ -514,3 +514,185 @@ main {
         transform: translateY(0);
     }
 }
+/* ===== HEADER FIX ===== */
+.header {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Optional subtitle */
+.header p {
+    margin-top: 8px;
+    opacity: 0.7;
+    font-size: 15px;
+}
+/* CENTER CONTENT PROPERLY */
+main {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+.grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;   /* CENTER CARDS */
+}
+
+.card {
+    width: 100%;
+    max-width: 600px;  /* important */
+    text-align: center;
+}
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    color: white;
+}
+
+.logo {
+    font-weight: 600;
+}
+.section-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+/* ===== BODY ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f7fb;
+    color: #1a1a1a;
+}
+
+/* DARK MODE */
+body.dark {
+    background: #0f172a;
+    color: white;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    color: white;
+}
+
+.nav-links a {
+    margin-left: 20px;
+    color: white;
+    text-decoration: none;
+}
+
+#themeToggle {
+    cursor: pointer;
+    margin-left: 15px;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.hero p {
+    margin-top: 5px;
+    color: #555;
+}
+
+/* ===== MAIN CONTENT ===== */
+main {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* ===== GRID (VERTICAL STYLE) ===== */
+.grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* ===== CARD ===== */
+.card {
+    width: 100%;
+    max-width: 600px;
+    padding: 18px;
+    border-radius: 10px;
+    background: white;
+    text-align: center;
+    text-decoration: none;
+    color: #1a1a1a;
+    transition: 0.3s;
+}
+
+.card:hover {
+    background: #4a6cf7;
+    color: white;
+    transform: translateY(-5px);
+}
+
+/* DARK CARD */
+body.dark .card {
+    background: #1e293b;
+    color: white;
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    text-align: center;
+    padding: 15px;
+    background: #e2e8f0;
+}
+
+body.dark .footer {
+    background: #020617;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .topbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .card {
+        width: 95%;
+    }
+}

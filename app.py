@@ -129,7 +129,7 @@ def home():
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
 
-    # -------- GET (open page) --------
+    # -------- GET (open upload page) --------
     if request.method == "GET":
         branch = request.args.get("branch")
         year = request.args.get("year")
@@ -187,9 +187,8 @@ def upload():
         cur.close()
         conn.close()
 
-        # ✅ REDIRECT BACK TO NOTES PAGE (VERY IMPORTANT)
-        return redirect(f"/subjects/{branch}/{year}/{subject}")
-
+        # ✅ CORRECT REDIRECT (THIS FIXES YOUR ERROR)
+        return redirect(f"/notes/{branch}/{year}/{subject}")
 
 subjects_data = {
 
@@ -408,8 +407,9 @@ def notes(branch, year, subject):
     cur = conn.cursor()
 
     cur.execute("""
-    SELECT title, file_path FROM notes
-    WHERE branch=%s AND year=%s AND subject=%s
+        SELECT title, file_path
+        FROM notes
+        WHERE branch=%s AND year=%s AND subject=%s
     """, (branch, year, subject))
 
     notes = cur.fetchall()
@@ -417,11 +417,14 @@ def notes(branch, year, subject):
     cur.close()
     conn.close()
 
-    return render_template("notes.html",
-                           notes=notes,
-                           branch=branch,
-                           year=year,
-                           subject=subject)
+    return render_template(
+        "notes.html",
+        notes=notes,
+        branch=branch,
+        year=year,
+        subject=subject
+    )
+
 
 
 

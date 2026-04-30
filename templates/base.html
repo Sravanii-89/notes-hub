@@ -1,52 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>GMR Notes Hub</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>GMR Notes Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
 
-<div class="layout">
+<!-- TOP NAVBAR -->
+<div class="topbar">
+    <div class="logo">🎓 GMRIT Notes Hub</div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h3>📚 Notes Hub</h3>
-
-        <a href="/home">🏠 Home</a>
-        <a href="/upload">📤 Upload</a>
-        <a href="/">🚪 Logout</a>
+    <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/upload">Upload</a>
+        <span id="themeToggle" onclick="toggleTheme()">🌙</span>
+        <a href="/">Logout</a>
     </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-
-        <!-- NAVBAR -->
-        <div class="navbar">
-            <span id="themeToggle" onclick="toggleTheme()">🌙</span>
-        </div>
-
-        <!-- HEADER -->
-        <div class="header">
-            <h1>🎓 GMRIT Deemed to be University</h1>
-        </div>
-
-        <!-- MAIN CONTENT -->
-        <main>
-            {% block content %}{% endblock %}
-        </main>
-
-        <!-- FOOTER -->
-        <div class="footer">
-            Made by <b>SRAVANI MULLU</b> |
-            <a href="https://www.linkedin.com/in/sravani-m-25a53b33a/" target="_blank">
-                LinkedIn Profile
-            </a>
-        </div>
-
-    </div>
-
 </div>
+
+<!-- HEADER -->
+<div class="hero">
+    <h1>GMR Institute of Technology</h1>
+    <p>Deemed to be University</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+    Made by <b>SRAVANI MULLU</b> |
+    <a href="https://www.linkedin.com/in/sravani-m-25a53b33a/" target="_blank">
+        LinkedIn Profile
+    </a>
+</footer>
 
 <!-- THEME SCRIPT -->
 <script>
@@ -56,11 +47,11 @@ function toggleTheme() {
     const icon = document.getElementById("themeToggle");
 
     if (document.body.classList.contains("dark")) {
-        localStorage.setItem("theme", "dark");
         icon.textContent = "🌞";
+        localStorage.setItem("theme", "dark");
     } else {
-        localStorage.setItem("theme", "light");
         icon.textContent = "🌙";
+        localStorage.setItem("theme", "light");
     }
 }
 
@@ -72,12 +63,6 @@ window.onload = () => {
         icon.textContent = "🌞";
     }
 };
-function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("active");
-
-    document.body.classList.toggle("sidebar-open");
-}
 </script>
 
 </body>
