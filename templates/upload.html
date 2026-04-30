@@ -1,22 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Upload</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
 
-<div class="upload-box">
-<h2>Upload Notes</h2>
+<div class="auth-container">
 
-<form method="POST" enctype="multipart/form-data">
-<input name="title" placeholder="Title">
-<input name="subject" placeholder="Subject">
-<input name="branch" placeholder="Branch">
-<input name="year" placeholder="Year">
-<input type="file" name="file">
-<button>Upload</button>
-</form>
+  <div class="auth-card">
+
+    <div class="auth-header">
+      <h2>📤 Upload Notes</h2>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="auth-form">
+
+      <input name="title" placeholder="Title" required>
+
+      <input name="subject" placeholder="Subject" required>
+
+      <input name="branch" placeholder="Branch" required>
+
+      <input name="year" placeholder="Year" required>
+
+      <input type="file" name="file" accept=".pdf" required>
+
+      <button class="btn-login">Upload PDF</button>
+
+    </form>
+
+  </div>
+
 </div>
 
-</body>
-</html>
+{% endblock %}
