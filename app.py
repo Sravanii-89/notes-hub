@@ -155,7 +155,7 @@ def upload():
 
         try:
             # Upload to Cloudinary
-            result = cloudinary.uploader.upload(file, resource_type="auto")
+            result = cloudinary.uploader.upload(file, resource_type="raw")
             file_url = result["secure_url"]
 
         except Exception as e:

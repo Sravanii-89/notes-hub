@@ -696,3 +696,40 @@ body.dark .footer {
         width: 95%;
     }
 }
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+body {
+    background: #0f172a;
+    color: white;
+}
+
+.hero {
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    padding: 40px 0;
+}
+
+.card {
+    background: #1e293b;
+    border-radius: 10px;
+}
+
+.footer {
+    background: #020617;
+}
+.note-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px auto;
+    max-width: 500px;
+}
