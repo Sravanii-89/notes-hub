@@ -488,3 +488,76 @@ body {
     background: #4a6cf7;
     transform: translateY(-5px);
 }
+/* ===== FINAL UI FIXES (ADD THIS AT END) ===== */
+
+/* UNIFIED GRID */
+.grid, .cards-grid, .branch-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 20px !important;
+    margin-top: 30px;
+}
+
+/* UNIFIED CARD */
+.card, .selectable-card, .branch-card {
+    background: rgba(255,255,255,0.12) !important;
+    padding: 20px;
+    border-radius: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    backdrop-filter: blur(10px);
+}
+
+.card:hover, .selectable-card:hover, .branch-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    background: rgba(0,212,255,0.25);
+}
+
+/* FIX LOGIN / REGISTER */
+.auth-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-box, .auth-card {
+    width: 100%;
+    max-width: 420px;
+    margin: auto;
+}
+
+/* FIX TEXT ALIGNMENT */
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* FIX PAGE SPACING */
+main, .container {
+    padding: 20px !important;
+}
+
+/* ===== LIGHT MODE ===== */
+body.light {
+    background: #f5f7fa !important;
+    color: #1a1a1a;
+}
+
+body.light .card {
+    background: white !important;
+    color: black;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    background: #020617;
+}
+
+.footer a {
+    color: #00d4ff;
+}
