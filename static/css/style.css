@@ -175,3 +175,83 @@ body.dark .footer {
         width: 100%;
     }
 }
+/* ===== TEXT COLORS (THEME-AWARE) ===== */
+
+/* Light mode defaults */
+body:not(.dark) {
+    color: #1a1a1a;
+}
+
+body:not(.dark) h1,
+body:not(.dark) h2,
+body:not(.dark) h3,
+body:not(.dark) h4,
+body:not(.dark) h5,
+body:not(.dark) h6,
+body:not(.dark) p,
+body:not(.dark) span,
+body:not(.dark) a {
+    color: #1a1a1a;
+}
+
+/* Links (light) */
+body:not(.dark) a {
+    color: #2563eb;
+}
+body:not(.dark) a:hover {
+    color: #1d4ed8;
+}
+
+/* Dark mode defaults */
+body.dark {
+    color: #e5e7eb;
+}
+
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6,
+body.dark p,
+body.dark span,
+body.dark a {
+    color: #e5e7eb;
+}
+
+/* Links (dark) */
+body.dark a {
+    color: #60a5fa;
+}
+body.dark a:hover {
+    color: #93c5fd;
+}
+
+/* Cards text contrast */
+body:not(.dark) .card {
+    color: #1a1a1a;
+}
+body.dark .card {
+    color: #e5e7eb;
+}
+
+/* Sidebar text contrast */
+.sidebar a {
+    color: #e5e7eb;
+}
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Inputs text */
+input, textarea {
+    color: #111827;
+}
+body.dark input,
+body.dark textarea {
+    color: #e5e7eb;
+    background: rgba(255,255,255,0.08);
+}
+body, a, p, h1, h2, h3 {
+    transition: color 0.2s ease, background 0.2s ease;
+}
