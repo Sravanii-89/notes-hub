@@ -255,3 +255,127 @@ body.dark textarea {
 body, a, p, h1, h2, h3 {
     transition: color 0.2s ease, background 0.2s ease;
 }
+/* ===== MOBILE RESPONSIVE FIX ===== */
+
+@media (max-width: 768px) {
+
+    /* Stack layout */
+    .layout {
+        flex-direction: column;
+    }
+
+    /* Sidebar becomes top bar */
+    .sidebar {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px;
+    }
+
+    .sidebar h3 {
+        display: none; /* hide title on mobile */
+    }
+
+    .sidebar a {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    /* Content spacing */
+    main {
+        padding: 15px;
+    }
+
+    /* Cards spacing */
+    .card {
+        padding: 15px;
+        font-size: 14px;
+    }
+
+    /* Navbar fix */
+    .navbar {
+        justify-content: space-between;
+    }
+}
+/* ===== TOPBAR ===== */
+.topbar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+}
+
+.menu-btn {
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 220px;
+    background: rgba(0,0,0,0.8);
+    padding: 20px;
+    transition: 0.3s;
+}
+
+.sidebar a {
+    display: block;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+/* ===== CONTENT ===== */
+.content {
+    flex: 1;
+}
+
+/* ===== MOBILE MODE ===== */
+@media (max-width: 768px) {
+
+    .topbar {
+        display: flex;
+    }
+
+    .layout {
+        flex-direction: column;
+    }
+
+    /* SIDEBAR HIDDEN */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        height: 100%;
+        width: 220px;
+        z-index: 1000;
+    }
+
+    /* SHOW SIDEBAR */
+    .sidebar.active {
+        left: 0;
+    }
+
+    /* OVERLAY EFFECT */
+    body.sidebar-open::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+    }
+
+    /* MAIN FIX */
+    main {
+        padding: 15px;
+    }
+
+    .card {
+        padding: 16px;
+        font-size: 14px;
+    }
+}
