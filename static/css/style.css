@@ -379,3 +379,14 @@ body, a, p, h1, h2, h3 {
         font-size: 14px;
     }
 }
+.main-title {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    opacity: 0.7;
+    margin-bottom: 20px;
+}

@@ -129,30 +129,40 @@ def home():
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
 
-    if request.method == "POST":
-        file = request.files["file"]
+    if request.method == "GET":
+        branch = request.args.get("branch")
+        year = request.args.get("year")
+        subject = request.args.get("subject")
 
-        # ✅ allow only PDF
-        if not file.filename.endswith(".pdf"):
-            return "Only PDF allowed!"
-
-        result = cloudinary.uploader.upload(file, resource_type="raw")
-
+        return render_template("upload.html",
+                               branch=branch,
+                               year=year,
+                               subject=subject)
+    if "user_id" not in session:
+        return redirect("/")
+    file = request.files.get("file")
+    title = request.form.get("title")
+    branch = request.form.get("branch")
+    year = request.form.get("year")
+    subject = request.form.get("subject")
+    if not file or not title:
+        return "Missing file or title"
+    upload_result = cloudinary.uploader.upload(file)
+    file_path = upload_result.get("secure_url")
+    if file_path:
         conn = get_db()
         cur = conn.cursor()
-
         cur.execute("""
         INSERT INTO notes (title, subject, branch, year, file_path, uploaded_by)
         VALUES (%s,%s,%s,%s,%s,%s)
         """, (
-            request.form["title"],
-            request.form["subject"],
-            request.form["branch"],
-            request.form["year"],
-            result["secure_url"],
+            title,
+            subject,
+            branch,
+            year,
+            file_path,
             session["user_id"]
-        ))
-
+        ))  
         conn.commit()
         cur.close()
         conn.close()
@@ -167,6 +177,16 @@ subjects_data = {
 # ---------- CSE ----------
 "CSE": {
     "2": [
+        "Design and Analysis of Algorithms",
+        "Computer Organization and Architecture",
+        "Operating Systems",
+        "Database Management Systems",
+        "Engineering economics and Project Management",
+        "Discrete Mathematical Structures",
+        "Object Oriented Programming With Java",
+        "Problem Solving using Python",
+        "Probability and Statistics Using Python",
+        "Web Coding and Development",
         "Artificial Intelligence",
         "Mathematical Foundation for Data Science",
         "Foundations of Data Science",
