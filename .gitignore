@@ -1,4 +1,7 @@
 .venv/
 __pycache__/
 .env
-uploads/
+instance/
+*.zip
+*.db
+*.code-workspace
