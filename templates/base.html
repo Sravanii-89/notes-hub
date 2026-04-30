@@ -7,38 +7,48 @@
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-    <div>📚 GMR Notes Hub</div>
+<div class="layout">
 
-    <div>
-        <button onclick="toggleTheme()">🌓</button>
-        <a href="/home">Home</a>
-        <a href="/upload">Upload</a>
-        <a href="/">Logout</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>📚 Notes Hub</h3>
+
+        <a href="/home">🏠 Home</a>
+        <a href="/upload">📤 Upload</a>
+        <a href="/">🚪 Logout</a>
     </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- NAVBAR -->
+        <div class="navbar">
+            <span id="themeToggle" onclick="toggleTheme()">🌙</span>
+        </div>
+
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🎓 GMRIT Deemed to be University</h1>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            Made by <b>SRAVANI MULLU</b> |
+            <a href="https://www.linkedin.com/in/sravani-m-25a53b33a/" target="_blank">
+                LinkedIn Profile
+            </a>
+        </div>
+
+    </div>
+
 </div>
 
-<!-- HEADER -->
-<div class="header">
-    <h1>🎓 GMRIT Deemed to be University</h1>
-</div>
-
-<!-- PAGE CONTENT -->
-{% block content %}{% endblock %}
-
-<!-- FOOTER -->
-<div class="footer">
-    Made by <b>SRAVANI MULLU</b> |
-    <a href="https://www.linkedin.com/in/sravani-m-25a53b33a/" target="_blank">
-        LinkedIn Profile
-    </a>
-</div>
-
-<span id="themeToggle" onclick="toggleTheme()" style="cursor:pointer; font-size:20px;">
-    🌙
-</span>
-
+<!-- THEME SCRIPT -->
 <script>
 function toggleTheme() {
     document.body.classList.toggle("dark");
@@ -60,8 +70,6 @@ window.onload = () => {
     if (localStorage.getItem("theme") === "dark") {
         document.body.classList.add("dark");
         icon.textContent = "🌞";
-    } else {
-        icon.textContent = "🌙";
     }
 };
 </script>
