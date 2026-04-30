@@ -159,6 +159,190 @@ def upload():
         return redirect("/home")
 
     return render_template("upload.html")
+subjects_data = {
 
+# ---------- CSE ----------
+"CSE": {
+    "2": [
+        "Artificial Intelligence",
+        "Mathematical Foundation for Data Science",
+        "Foundations of Data Science",
+        "Foundations of Machine Learning"
+    ],
+    "3": [
+        "Optimization Techniques for ML",
+        "Automata Theory & Language Processors",
+        "Web Technologies",
+        "Deep Learning for Data Science",
+        "Data Analytics & Visualization",
+        "Microprocessors and Microcontrollers",
+        "Artificial Intelligence and Machine Learning",
+        "Computer Networks",
+        "Theory of Computation",
+        "Artificial Neural Networks",
+        "Backend Programming Languages",
+        "Fundamentals of Security",
+        "Fundamentals of Cloud Computing",
+        "Compiler Design",
+        "Cryptography and Network Security",
+        "Software Engineering",
+        "Cloud Services using AWS",
+        "Cyber Security",
+        "Web Application Frameworks",
+        "Deep Learning Techniques"
+    ],
+    "4": [
+        "Deep Learning",
+        "Natural Language Processing",
+        "Web Application Databases",
+        "Cloud Security",
+        "Cloud Security Essentials"
+    ]
+},
+
+# ---------- EEE ----------
+"EEE": {
+    "2": [
+        "Semiconductors and Devices",
+        "Measurement Instruments",
+        "Circuit Analysis II",
+        "DC Machines",
+        "Electromagnetic Field Theory",
+        "Mathematics",
+        "Linear Integrated Circuits",
+        "Power Electronics",
+        "Power Generation Transmission Distribution",
+        "Signals and Systems"
+    ],
+    "3": [
+        "Java OOP",
+        "Control Systems",
+        "Electrical Drives",
+        "Power System Protection",
+        "Economics & Project Management",
+        "Power System Analysis",
+        "Utilization of Electrical Energy"
+    ]
+},
+
+# ---------- ECE ----------
+"ECE": {
+    "2": [
+        "Python Programming",
+        "Logic Circuit Design",
+        "Electronic Devices and Circuits",
+        "Signals and Systems",
+        "Complex Variables",
+        "Random Variables and Stochastic Process",
+        "Linear Control Systems",
+        "Analog and Digital Communication",
+        "Object Oriented Programming",
+        "Electromagnetic Waves and Transmission Lines",
+        "Analog Electronic Circuits"
+    ],
+    "3": [
+        "Linear & Digital IC Applications",
+        "Microprocessors & Microcontrollers",
+        "VLSI Design",
+        "Antennas & Microwave Engineering",
+        "Engineering Economics & Project Management",
+        "Cellular & Mobile Communications",
+        "Digital Signal Processing"
+    ],
+    "4": [
+        "Project Work"
+    ]
+},
+
+# ---------- CIVIL ----------
+"CIVIL": {
+    "3": [
+        "RC Structures",
+        "Environmental Engineering",
+        "Foundation Engineering",
+        "Hydrology",
+        "OOPS",
+        "Steel Structures",
+        "Estimation & Costing"
+    ]
+},
+
+# ---------- MECH ----------
+"MECH": {
+    "2": [
+        "Materials & Manufacturing",
+        "Machine Drawing",
+        "Python Programming",
+        "Fluid Mechanics",
+        "Kinematics",
+        "Thermodynamics",
+        "Java OOP",
+        "Applied Thermodynamics",
+        "Dynamics of Machinery",
+        "Metal Cutting",
+        "Mechanics of Solids"
+    ],
+    "3": [
+        "CAD & CAM",
+        "Design of Machine Elements I",
+        "Steam & Gas Turbines",
+        "Measurements & Metrology",
+        "Design of Machine Elements II",
+        "FEM",
+        "Heat Transfer"
+    ],
+    "4": [
+        "Project Work"
+    ]
+},
+
+# ---------- IT ----------
+"IT": {
+    "2": [
+        "Python Programming and Applications",
+        "Digital Logic Design",
+        "Discrete Mathematical Structures",
+        "Database Management Systems",
+        "Data Communication Systems",
+        "Object Oriented Programming through Java",
+        "Probability and Statistics",
+        "Computer Organization and Architecture",
+        "Operating Systems",
+        "Design and Analysis of Algorithms",
+        "Web Technologies"
+    ],
+    "3": [
+        "Computer Networking",
+        "Artificial Intelligence",
+        "Cloud Computing",
+        "Software Engineering Principles",
+        "Artificial Neural Networks",
+        "Engineering Economics & Project Management",
+        "Automata & Compiler Design",
+        "Machine Learning",
+        "Deep Learning"
+    ],
+    "4": [
+        "Natural Language Processing"
+    ]
+},
+
+# ---------- COMMON (1st Year) ----------
+"COMMON": {
+    "1": [
+        "BEEE",
+        "BCME",
+        "Engineering Physics",
+        "Engineering Graphics",
+        "Engineering Chemistry",
+        "Communicative English"
+    ]
+}
+}
+
+@app.route("/subjects/<branch>/<year>")
+def subjects(branch, year):
+    subjects = subjects_data.get(branch, {}).get(year, [])
+    return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
 if __name__ == "__main__":
     app.run(debug=True)
