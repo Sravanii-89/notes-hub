@@ -13,9 +13,14 @@
 {% if notes %}
     {% for note in notes %}
         <div class="note-card">
-            <h3>{{ note[0] }}</h3>
-            <a href="{{ note[1] }}" target="_blank">📥 Download</a>
-        </div>
+    <h3>{{ note[0] }}</h3>
+
+    <!-- PDF PREVIEW -->
+    <iframe src="{{ note[1] }}" class="pdf-viewer"></iframe>
+    <a href="/download/{{ note[2] }}">
+    <button>📥 Download</button>
+</a>
+</div>
     {% endfor %}
 {% else %}
     <div class="note-card">

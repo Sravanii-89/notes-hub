@@ -123,8 +123,50 @@ def register():
 def home():
     if "user_id" not in session:
         return redirect("/")
-    return render_template("home.html")
 
+    conn = get_db()
+    cur = conn.cursor()
+
+    # TOTAL NOTES
+    cur.execute("SELECT COUNT(*) FROM notes")
+    total_notes = cur.fetchone()[0]
+
+    # TOTAL DOWNLOADS
+    cur.execute("SELECT COALESCE(SUM(downloads), 0) FROM notes")
+    total_downloads = cur.fetchone()[0]
+
+    # USER DETAILS
+    cur.execute("SELECT name, branch, year FROM users WHERE id=%s", (session["user_id"],))
+    user = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "home.html",
+        total_notes=total_notes,
+        total_downloads=total_downloads,
+        user=user
+    )
+
+@app.route("/download/<int:note_id>")
+def download(note_id):
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    # increment download
+    cur.execute("UPDATE notes SET downloads = downloads + 1 WHERE id=%s", (note_id,))
+
+    # get file url
+    cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
+    file = cur.fetchone()[0]
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return redirect(file)
 # ---------- UPLOAD ----------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():

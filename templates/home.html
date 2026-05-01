@@ -1,18 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="main-title">📚 GMR Notes Hub</h1>
-<p class="subtitle">
-Access notes by branch, year, and subject. Upload and share PDFs with your peers.
-</p>
 
-<h2 class="section-title">Select Your Branch</h2>
-<div class="grid">
-    <a href="/branch/CSE" class="card">CSE</a>
-    <a href="/branch/ECE" class="card">ECE</a>
-    <a href="/branch/EEE" class="card">EEE</a>
-    <a href="/branch/MECH" class="card">MECH</a>
-    <a href="/branch/CIVIL" class="card">CIVIL</a>
-    <a href="/branch/IT" class="card">IT</a>
+<h2>Welcome, {{ user[0] }} 👋</h2>
+
+<div class="dashboard">
+
+    <!-- STATS -->
+    <div class="stat-card">
+        <h3>{{ total_notes }}</h3>
+        <p>Total Notes</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>{{ total_downloads }}</h3>
+        <p>Total Downloads</p>
+    </div>
+
+</div>
+
+<!-- USER PROFILE -->
+<div class="profile-card">
+    <h3>👤 Profile</h3>
+    <p><b>Name:</b> {{ user[0] }}</p>
+    <p><b>Branch:</b> {{ user[1] }}</p>
+    <p><b>Year:</b> {{ user[2] }}</p>
 </div>
 
 {% endblock %}
