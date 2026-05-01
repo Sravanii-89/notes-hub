@@ -149,24 +149,6 @@ def home():
         user=user
     )
 
-@app.route("/download/<int:note_id>")
-def download(note_id):
-
-    conn = get_db()
-    cur = conn.cursor()
-
-    # increment download
-    cur.execute("UPDATE notes SET downloads = downloads + 1 WHERE id=%s", (note_id,))
-
-    # get file url
-    cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
-    file = cur.fetchone()[0]
-
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return redirect(file)
 # ---------- UPLOAD ----------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
