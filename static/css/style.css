@@ -371,3 +371,97 @@ body.dark .sidebar {
     max-width: 1000px;
     margin: auto;
 }
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 220px;
+    background: linear-gradient(180deg, #0f172a, #1e293b);
+    color: white;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    color: #cbd5f5;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+/* HOVER GLOW */
+.sidebar a:hover {
+    background: rgba(124,58,237,0.2);
+    box-shadow: 0 0 10px rgba(124,58,237,0.4);
+    transform: translateX(5px);
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ===== AVATAR ===== */
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #7c3aed, #06b6d4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+}
+
+/* ===== SMOOTH ANIMATIONS ===== */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px) scale(1.02);
+}
+
+/* ===== BUTTON GLOW ===== */
+button:hover {
+    box-shadow: 0 0 12px rgba(124,58,237,0.5);
+}
+
+/* ===== PAGE FADE ===== */
+body {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+.notes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.note-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.view-btn {
+    display: inline-block;
+    margin: 10px 0;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.note-card.empty {
+    text-align: center;
+    opacity: 0.8;
+}

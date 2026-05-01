@@ -173,9 +173,9 @@ def upload():
 
     # -------- GET (open upload page) --------
     if request.method == "GET":
-        branch = request.args.get("branch")
-        year = request.args.get("year")
-        subject = request.args.get("subject")
+        branch = request.form.get("branch").strip().upper()
+        year = request.form.get("year").strip()
+        subject = request.form.get("subject").strip()
 
         return render_template(
             "upload.html",
@@ -466,7 +466,27 @@ def notes(branch, year, subject):
         year=year,
         subject=subject
     )
+@app.route("/download/<int:note_id>")
+def download(note_id):
 
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
+    file = cur.fetchone()
+
+    if not file:
+        return "File not found"
+
+    file_url = file[0]
+
+    cur.execute("UPDATE notes SET downloads = downloads + 1 WHERE id=%s", (note_id,))
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return redirect(file_url)
 
 
 

@@ -10,24 +10,38 @@
 
 <h2 class="section-title">{{ subject }} Notes</h2>
 
-{% if notes %}
-    {% for note in notes %}
-        <div class="note-card">
-    <h3>{{ note[0] }}</h3>
+{% if notes and notes|length > 0 %}
 
-    <!-- PDF PREVIEW -->
-    <iframe src="{{ note[1] }}" class="pdf-viewer"></iframe>
-    <a href="/download/{{ note[2] }}">
-    <button>📥 Download</button>
-</a>
-</div>
-    {% endfor %}
+    <div class="notes-container">
+
+        {% for note in notes %}
+        <div class="note-card">
+
+            <h3>{{ note[1] }}</h3>
+
+            <!-- VIEW BUTTON -->
+            <a href="{{ note[2] }}" target="_blank" class="view-btn">
+                📄 View PDF
+            </a>
+
+            <!-- DOWNLOAD BUTTON -->
+            <a href="/download/{{ note[0] }}">
+                <button>📥 Download</button>
+            </a>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
 {% else %}
-    <div class="note-card">
+
+    <div class="note-card empty">
         😢 No notes uploaded yet  
         <br><br>
         You can be the first to upload!
     </div>
+
 {% endif %}
 
 {% endblock %}
