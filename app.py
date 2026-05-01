@@ -449,7 +449,7 @@ def notes(branch, year, subject):
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT title, file_path
+        SELECT id, title, file_path
         FROM notes
         WHERE branch=%s AND year=%s AND subject=%s
     """, (branch, year, subject))

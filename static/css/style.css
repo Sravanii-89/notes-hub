@@ -304,3 +304,70 @@ body.dark .sidebar {
 .profile-card p {
     color: var(--text);
 }
+.card.active {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 15px rgba(124,58,237,0.4);
+}
+/* ===== AUTH PAGES ===== */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.auth-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.auth-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.auth-box input,
+.auth-box select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+}
+@media (max-width: 768px) {
+
+    .app {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .auth-box {
+        margin: 10px;
+    }
+
+}
+.content {
+    max-width: 1000px;
+    margin: auto;
+}

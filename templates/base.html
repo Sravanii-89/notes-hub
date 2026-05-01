@@ -4,39 +4,47 @@
     <title>GMR Notes Hub</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ICONS -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
 </head>
 
 <body>
 
-<!-- LOADER -->
-<div id="loader">
-    <div class="spinner"></div>
-</div>
+<div id="loader"><div class="spinner"></div></div>
 
 <div class="app">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <h2>📚 Notes</h2>
 
-        <a href="/home">🏠 Dashboard</a>
-        <a href="/upload">📤 Upload</a>
-        <a href="/">🚪 Logout</a>
+        <div class="brand">📚 GMR Hub</div>
+
+        <a href="/home"><i class="ri-home-4-line"></i> Home</a>
+        <a href="/upload"><i class="ri-upload-cloud-line"></i> Upload</a>
+        <a href="/"><i class="ri-logout-box-line"></i> Logout</a>
+
     </aside>
 
-    <!-- MAIN AREA -->
+    <!-- MAIN -->
     <div class="main">
 
         <!-- TOPBAR -->
         <div class="topbar">
-            <h3>Dashboard</h3>
 
-            <div>
+            <h3>Notes Portal</h3>
+
+            <div class="top-right">
                 <span id="themeToggle" onclick="toggleTheme()">🌙</span>
+
+                <!-- USER AVATAR -->
+                <div class="avatar">
+                    {{ session.get("user_id", "U") }}
+                </div>
             </div>
+
         </div>
 
-        <!-- CONTENT -->
         <div class="content">
             {% block content %}{% endblock %}
         </div>
@@ -45,7 +53,6 @@
 
 </div>
 
-<!-- THEME + LOADER SCRIPT -->
 <script>
 function toggleTheme() {
     document.body.classList.toggle("dark");
@@ -62,15 +69,12 @@ function toggleTheme() {
 }
 
 window.onload = () => {
-    const icon = document.getElementById("themeToggle");
-
     if (localStorage.getItem("theme") === "dark") {
         document.body.classList.add("dark");
-        icon.textContent = "🌞";
+        document.getElementById("themeToggle").textContent = "🌞";
     }
 
-    const loader = document.getElementById("loader");
-    loader.style.display = "none";
+    document.getElementById("loader").style.display = "none";
 };
 </script>
 
