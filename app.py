@@ -429,12 +429,11 @@ def notes(branch, year, subject):
 
     conn = get_db()
     cur = conn.cursor()
-
     cur.execute("""
-        SELECT id, title, file_path
-        FROM notes
-        WHERE branch=%s AND year=%s AND subject=%s
-    """, (branch, year, subject))
+    SELECT id, title, file_path
+    FROM notes
+    WHERE branch=%s AND year=%s AND subject=%s
+""", (branch, year, subject))
 
     notes = cur.fetchall()
 

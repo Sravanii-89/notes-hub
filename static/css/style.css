@@ -465,3 +465,75 @@ body {
     text-align: center;
     opacity: 0.8;
 }
+/* ===== FOOTER PREMIUM ===== */
+.footer {
+    margin-top: auto;
+    background: linear-gradient(135deg, #7c3aed, #06b6d4);
+    color: white;
+    padding: 20px;
+}
+
+.footer-container {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+/* LEFT */
+.footer-left p {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* CENTER */
+.footer-center {
+    text-align: center;
+}
+
+.footer-center a {
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+/* ICON ANIMATION */
+.footer-center i {
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.footer-center i:hover {
+    transform: scale(1.2);
+}
+
+/* RIGHT */
+.footer-right {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+.footer {
+    animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

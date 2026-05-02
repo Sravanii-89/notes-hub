@@ -1,46 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="breadcrumb">
-    <a href="/home">Home</a> >
-    <a href="/branch/{{ branch }}">{{ branch }}</a> >
-    <a href="/year/{{ branch }}/{{ year }}">Year {{ year }}</a> >
-    <span>{{ subject }}</span>
-</div>
+<h2>{{ subject }} Notes</h2>
 
-<h2 class="section-title">{{ subject }} Notes</h2>
+{% if notes %}
 
-{% if notes and notes|length > 0 %}
+    {% for note in notes %}
+    <div class="note-card">
 
-    <div class="notes-container">
+        <h3>{{ note[1] }}</h3>
 
-        {% for note in notes %}
-        <div class="note-card">
+        <a href="{{ note[2] }}" target="_blank">📄 View</a>
 
-            <h3>{{ note[1] }}</h3>
-
-            <!-- VIEW BUTTON -->
-            <a href="{{ note[2] }}" target="_blank" class="view-btn">
-                📄 View PDF
-            </a>
-
-            <!-- DOWNLOAD BUTTON -->
-            <a href="/download/{{ note[0] }}">
-                <button>📥 Download</button>
-            </a>
-
-        </div>
-        {% endfor %}
+        <a href="/download/{{ note[0] }}">
+            <button>Download</button>
+        </a>
 
     </div>
+    {% endfor %}
 
 {% else %}
 
-    <div class="note-card empty">
-        😢 No notes uploaded yet  
-        <br><br>
-        You can be the first to upload!
-    </div>
+    <p>No notes yet</p>
 
 {% endif %}
 

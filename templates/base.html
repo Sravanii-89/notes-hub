@@ -1,82 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>GMR Notes Hub</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<footer class="footer">
 
-    <!-- ICONS -->
-    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
-</head>
+    <div class="footer-container">
 
-<body>
-
-<div id="loader"><div class="spinner"></div></div>
-
-<div class="app">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-
-        <div class="brand">📚 GMR Hub</div>
-
-        <a href="/home"><i class="ri-home-4-line"></i> Home</a>
-        <a href="/upload"><i class="ri-upload-cloud-line"></i> Upload</a>
-        <a href="/"><i class="ri-logout-box-line"></i> Logout</a>
-
-    </aside>
-
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- TOPBAR -->
-        <div class="topbar">
-
-            <h3>Notes Portal</h3>
-
-            <div class="top-right">
-                <span id="themeToggle" onclick="toggleTheme()">🌙</span>
-
-                <!-- USER AVATAR -->
-                <div class="avatar">
-                    {{ session.get("user_id", "U") }}
-                </div>
-            </div>
-
+        <!-- LEFT -->
+        <div class="footer-left">
+            📚 <b>GMR Notes Hub</b>
+            <p>Smart academic resource platform</p>
         </div>
 
-        <div class="content">
-            {% block content %}{% endblock %}
+        <!-- CENTER -->
+        <div class="footer-center">
+            <p>Made by <b>SRAVANI MULLU</b></p>
+
+            <a href="https://www.linkedin.com/in/sravani-m-25a53b33a/" target="_blank">
+                <i class="ri-linkedin-box-fill"></i> LinkedIn
+            </a>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="footer-right">
+            <p>© 2026 All Rights Reserved</p>
         </div>
 
     </div>
 
-</div>
-
-<script>
-function toggleTheme() {
-    document.body.classList.toggle("dark");
-
-    const icon = document.getElementById("themeToggle");
-
-    if (document.body.classList.contains("dark")) {
-        icon.textContent = "🌞";
-        localStorage.setItem("theme", "dark");
-    } else {
-        icon.textContent = "🌙";
-        localStorage.setItem("theme", "light");
-    }
-}
-
-window.onload = () => {
-    if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-        document.getElementById("themeToggle").textContent = "🌞";
-    }
-
-    document.getElementById("loader").style.display = "none";
-};
-</script>
-
-</body>
-</html>
+</footer>
