@@ -1,26 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2 class="section-title">Upload Notes</h2>
+<h2 class="section-title">📤 Upload Notes</h2>
 
-<div class="auth-container">
-<div class="auth-box">
+<div class="upload-container">
 
-<form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" class="upload-box">
 
-<input type="text" name="title" placeholder="Title" required>
+        <label>Title</label>
+        <input type="text" name="title" placeholder="Enter note title" required>
 
-<input type="text" name="branch" value="{{ branch }}" readonly>
-<input type="text" name="year" value="{{ year }}" readonly>
-<input type="text" name="subject" value="{{ subject }}" readonly>
+        <label>Branch</label>
+        <input type="text" name="branch" value="{{ branch }}" readonly>
 
-<input type="file" name="file" accept="application/pdf" required>
+        <label>Year</label>
+        <input type="text" name="year" value="{{ year }}" readonly>
 
-<button type="submit">Upload PDF</button>
+        <label>Subject</label>
+        <input type="text" name="subject" value="{{ subject }}" readonly>
 
-</form>
+        <label>Upload PDF</label>
+        <input type="file" name="file" accept="application/pdf" required>
 
-</div>
+        <button type="submit">🚀 Upload PDF</button>
+
+    </form>
+
 </div>
 
 {% endblock %}

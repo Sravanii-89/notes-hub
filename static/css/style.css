@@ -109,3 +109,37 @@ button {
     display: flex;
     justify-content: space-between;
 }
+/* UPLOAD PAGE */
+.upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.upload-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 25px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.upload-box label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.upload-box input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.upload-box button {
+    margin-top: 10px;
+}

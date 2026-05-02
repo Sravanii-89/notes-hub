@@ -241,16 +241,18 @@ def download(note_id):
     cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
     note = cur.fetchone()
 
-    if note:
-        cur.execute("UPDATE notes SET downloads = downloads + 1 WHERE id=%s", (note_id,))
-        conn.commit()
+    if not note:
+        return "File not found"
+
+    file_url = note[0]
+
+    cur.execute("UPDATE notes SET downloads = downloads + 1 WHERE id=%s", (note_id,))
+    conn.commit()
 
     cur.close()
     conn.close()
 
-    if note:
-        return redirect(note[0])
-    return "File not found"
+    return redirect(file_url)
 
 
 if __name__ == "__main__":
