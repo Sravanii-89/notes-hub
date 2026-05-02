@@ -16,12 +16,10 @@ cloudinary.config(
 )
 
 # ---------- DATABASE ----------
-# ---------- DATABASE ----------
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db():
     return psycopg2.connect(DATABASE_URL, sslmode="require")
-
 
 def init_db():
     conn = get_db()
@@ -55,8 +53,6 @@ def init_db():
     cur.close()
     conn.close()
 
-
-# ✅ CALL AFTER DEFINITIONS
 init_db()
 
 # ---------- LOGIN ----------
@@ -65,9 +61,9 @@ def login():
     if request.method == "POST":
         conn = get_db()
         cur = conn.cursor()
+
         email = request.form.get("email")
         password = request.form.get("password")
-
 
         cur.execute("SELECT * FROM users WHERE email=%s", (email,))
         user = cur.fetchone()
@@ -127,15 +123,12 @@ def home():
     conn = get_db()
     cur = conn.cursor()
 
-    # TOTAL NOTES
     cur.execute("SELECT COUNT(*) FROM notes")
     total_notes = cur.fetchone()[0]
 
-    # TOTAL DOWNLOADS
     cur.execute("SELECT COALESCE(SUM(downloads), 0) FROM notes")
     total_downloads = cur.fetchone()[0]
 
-    # USER DETAILS
     cur.execute("SELECT name, branch, year FROM users WHERE id=%s", (session["user_id"],))
     user = cur.fetchone()
 
@@ -153,11 +146,14 @@ def home():
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
 
-    # -------- GET (open upload page) --------
+    if "user_id" not in session:
+        return redirect("/")
+
+    # -------- GET --------
     if request.method == "GET":
-        branch = request.form.get("branch").strip().upper()
-        year = request.form.get("year").strip()
-        subject = request.form.get("subject").strip()
+        branch = request.args.get("branch", "").strip().upper()
+        year = request.args.get("year", "").strip()
+        subject = request.args.get("subject", "").strip()
 
         return render_template(
             "upload.html",
@@ -166,7 +162,7 @@ def upload():
             subject=subject
         )
 
-    # -------- POST (upload file) --------
+    # -------- POST --------
     if request.method == "POST":
 
         if "file" not in request.files:
@@ -178,20 +174,16 @@ def upload():
             return "No file selected"
 
         try:
-            # Upload to Cloudinary
             result = cloudinary.uploader.upload(file, resource_type="raw")
             file_url = result["secure_url"]
-
         except Exception as e:
             return f"Upload failed: {str(e)}"
 
-        # Get form data
-        title = request.form.get("title")
-        subject = request.form.get("subject")
-        branch = request.form.get("branch")
-        year = request.form.get("year")
+        title = request.form.get("title", "").strip()
+        subject = request.form.get("subject", "").strip()
+        branch = request.form.get("branch", "").strip().upper()
+        year = request.form.get("year", "").strip()
 
-        # Save to DB
         conn = get_db()
         cur = conn.cursor()
 
@@ -211,229 +203,51 @@ def upload():
         cur.close()
         conn.close()
 
-        # ✅ CORRECT REDIRECT (THIS FIXES YOUR ERROR)
         return redirect(f"/notes/{branch}/{year}/{subject}")
 
+# ---------- SUBJECT DATA ----------
 subjects_data = {
-
-# ---------- CSE ----------
-"CSE": {
-    "2": [
-        "Design and Analysis of Algorithms",
-        "Computer Organization and Architecture",
-        "Operating Systems",
-        "Database Management Systems",
-        "Engineering economics and Project Management",
-        "Discrete Mathematical Structures",
-        "Object Oriented Programming With Java",
-        "Problem Solving using Python",
-        "Probability and Statistics Using Python",
-        "Web Coding and Development",
-        "Artificial Intelligence",
-        "Mathematical Foundation for Data Science",
-        "Foundations of Data Science",
-        "Foundations of Machine Learning"
-    ],
-    "3": [
-        "Optimization Techniques for ML",
-        "Automata Theory & Language Processors",
-        "Web Technologies",
-        "Deep Learning for Data Science",
-        "Data Analytics & Visualization",
-        "Microprocessors and Microcontrollers",
-        "Artificial Intelligence and Machine Learning",
-        "Computer Networks",
-        "Theory of Computation",
-        "Artificial Neural Networks",
-        "Backend Programming Languages",
-        "Fundamentals of Security",
-        "Fundamentals of Cloud Computing",
-        "Compiler Design",
-        "Cryptography and Network Security",
-        "Software Engineering",
-        "Cloud Services using AWS",
-        "Cyber Security",
-        "Web Application Frameworks",
-        "Deep Learning Techniques"
-    ],
-    "4": [
-        "Deep Learning",
-        "Natural Language Processing",
-        "Web Application Databases",
-        "Cloud Security",
-        "Cloud Security Essentials"
-    ]
-},
-
-# ---------- EEE ----------
-"EEE": {
-    "2": [
-        "Semiconductors and Devices",
-        "Measurement Instruments",
-        "Circuit Analysis II",
-        "DC Machines",
-        "Electromagnetic Field Theory",
-        "Mathematics",
-        "Linear Integrated Circuits",
-        "Power Electronics",
-        "Power Generation Transmission Distribution",
-        "Signals and Systems"
-    ],
-    "3": [
-        "Java OOP",
-        "Control Systems",
-        "Electrical Drives",
-        "Power System Protection",
-        "Economics & Project Management",
-        "Power System Analysis",
-        "Utilization of Electrical Energy"
-    ]
-},
-
-# ---------- ECE ----------
-"ECE": {
-    "2": [
-        "Python Programming",
-        "Logic Circuit Design",
-        "Electronic Devices and Circuits",
-        "Signals and Systems",
-        "Complex Variables",
-        "Random Variables and Stochastic Process",
-        "Linear Control Systems",
-        "Analog and Digital Communication",
-        "Object Oriented Programming",
-        "Electromagnetic Waves and Transmission Lines",
-        "Analog Electronic Circuits"
-    ],
-    "3": [
-        "Linear & Digital IC Applications",
-        "Microprocessors & Microcontrollers",
-        "VLSI Design",
-        "Antennas & Microwave Engineering",
-        "Engineering Economics & Project Management",
-        "Cellular & Mobile Communications",
-        "Digital Signal Processing"
-    ],
-    "4": [
-        "Project Work"
-    ]
-},
-
-# ---------- CIVIL ----------
-"CIVIL": {
-    "3": [
-        "RC Structures",
-        "Environmental Engineering",
-        "Foundation Engineering",
-        "Hydrology",
-        "OOPS",
-        "Steel Structures",
-        "Estimation & Costing"
-    ]
-},
-
-# ---------- MECH ----------
-"MECH": {
-    "2": [
-        "Materials & Manufacturing",
-        "Machine Drawing",
-        "Python Programming",
-        "Fluid Mechanics",
-        "Kinematics",
-        "Thermodynamics",
-        "Java OOP",
-        "Applied Thermodynamics",
-        "Dynamics of Machinery",
-        "Metal Cutting",
-        "Mechanics of Solids"
-    ],
-    "3": [
-        "CAD & CAM",
-        "Design of Machine Elements I",
-        "Steam & Gas Turbines",
-        "Measurements & Metrology",
-        "Design of Machine Elements II",
-        "FEM",
-        "Heat Transfer"
-    ],
-    "4": [
-        "Project Work"
-    ]
-},
-
-# ---------- IT ----------
-"IT": {
-    "2": [
-        "Python Programming and Applications",
-        "Digital Logic Design",
-        "Discrete Mathematical Structures",
-        "Database Management Systems",
-        "Data Communication Systems",
-        "Object Oriented Programming through Java",
-        "Probability and Statistics",
-        "Computer Organization and Architecture",
-        "Operating Systems",
-        "Design and Analysis of Algorithms",
-        "Web Technologies"
-    ],
-    "3": [
-        "Computer Networking",
-        "Artificial Intelligence",
-        "Cloud Computing",
-        "Software Engineering Principles",
-        "Artificial Neural Networks",
-        "Engineering Economics & Project Management",
-        "Automata & Compiler Design",
-        "Machine Learning",
-        "Deep Learning"
-    ],
-    "4": [
-        "Natural Language Processing"
-    ]
-},
-
-# ---------- COMMON (1st Year) ----------
-"COMMON": {
-    "1": [
-        "BEEE",
-        "BCME",
-        "Engineering Physics",
-        "Engineering Graphics",
-        "Engineering Chemistry",
-        "Communicative English"
-    ]
-}
+    "CSE": {"2": ["Database Management Systems"]},
+    "EEE": {"2": ["DC Machines"]},
+    "ECE": {"2": ["Signals and Systems"]},
+    "IT": {"2": ["DBMS"]},
+    "COMMON": {"1": ["Engineering Physics"]}
 }
 
+# ---------- SUBJECT PAGE ----------
 @app.route("/subjects/<branch>/<year>")
 def subjects(branch, year):
     subjects = subjects_data.get(branch, {}).get(year, [])
     return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
 
-# ---------- BRANCH PAGE ----------
+# ---------- BRANCH ----------
 @app.route("/branch/<branch>")
 def branch_page(branch):
     return render_template("years.html", branch=branch)
 
-
-# ---------- YEAR PAGE ----------
+# ---------- YEAR ----------
 @app.route("/year/<branch>/<year>")
 def year_page(branch, year):
     subjects = subjects_data.get(branch, {}).get(year, [])
     return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
 
-
-# ---------- NOTES PAGE ----------
+# ---------- NOTES ----------
 @app.route("/notes/<branch>/<year>/<subject>")
 def notes(branch, year, subject):
 
+    if "user_id" not in session:
+        return redirect("/")
+
     conn = get_db()
     cur = conn.cursor()
+
     cur.execute("""
-    SELECT id, title, file_path
-    FROM notes
-    WHERE branch=%s AND year=%s AND subject=%s
-""", (branch, year, subject))
+        SELECT id, title, file_path
+        FROM notes
+        WHERE LOWER(branch)=LOWER(%s)
+        AND year=%s
+        AND LOWER(subject)=LOWER(%s)
+    """, (branch.strip(), year.strip(), subject.strip()))
 
     notes = cur.fetchall()
 
@@ -447,6 +261,8 @@ def notes(branch, year, subject):
         year=year,
         subject=subject
     )
+
+# ---------- DOWNLOAD ----------
 @app.route("/download/<int:note_id>")
 def download(note_id):
 
@@ -469,7 +285,6 @@ def download(note_id):
 
     return redirect(file_url)
 
-
-
+# ---------- RUN ----------
 if __name__ == "__main__":
     app.run(debug=True)

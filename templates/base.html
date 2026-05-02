@@ -1,27 +1,44 @@
-<footer class="footer">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GMR Notes Hub</title>
 
-    <div class="footer-container">
+    <!-- ✅ CSS ONLY HERE -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-        <!-- LEFT -->
-        <div class="footer-left">
-            📚 <b>GMR Notes Hub</b>
-            <p>Smart academic resource platform</p>
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <!-- YOUR CONTENT -->
+    {% block content %}{% endblock %}
+
+    <!-- ✅ FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+
+            <div class="footer-left">
+                📚 <b>GMR Notes Hub</b>
+                <p>Smart academic resource platform</p>
+            </div>
+
+            <div class="footer-center">
+                <p>Made by <b>SRAVANI MULLU</b></p>
+                <a href="https://www.linkedin.com/in/sravani-m-25a53b33a/" target="_blank">
+                    <i class="ri-linkedin-box-fill"></i> LinkedIn
+                </a>
+            </div>
+
+            <div class="footer-right">
+                <p>© 2026 All Rights Reserved</p>
+            </div>
+
         </div>
+    </footer>
 
-        <!-- CENTER -->
-        <div class="footer-center">
-            <p>Made by <b>SRAVANI MULLU</b></p>
-
-            <a href="https://www.linkedin.com/in/sravani-m-25a53b33a/" target="_blank">
-                <i class="ri-linkedin-box-fill"></i> LinkedIn
-            </a>
-        </div>
-
-        <!-- RIGHT -->
-        <div class="footer-right">
-            <p>© 2026 All Rights Reserved</p>
-        </div>
-
-    </div>
-
-</footer>
+</body>
+</html>
