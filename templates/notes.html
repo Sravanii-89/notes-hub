@@ -1,28 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>{{ subject }} Notes</h2>
+<div class="breadcrumb">
+    <a href="/home">Home</a> >
+    <a href="/branch/{{ branch }}">{{ branch }}</a> >
+    <a href="/year/{{ branch }}/{{ year }}">Year {{ year }}</a> >
+    <span>{{ subject }}</span>
+</div>
 
+<h2 class="section-title">{{ subject }} Notes</h2>
+
+<a href="/upload?branch={{ branch }}&year={{ year }}&subject={{ subject }}">
+    <button>➕ Upload Notes</button>
+</a>
+
+<div class="notes-container">
 {% if notes %}
-
     {% for note in notes %}
-    <div class="note-card">
+        <div class="note-card">
+            <h3>{{ note[1] }}</h3>
 
-        <h3>{{ note[1] }}</h3>
+            <a href="{{ note[2] }}" target="_blank">📄 View</a>
 
-        <a href="{{ note[2] }}" target="_blank">📄 View</a>
-
-        <a href="/download/{{ note[0] }}">
-            <button>Download</button>
-        </a>
-
-    </div>
+            <a href="/download/{{ note[0] }}">
+                <button>📥 Download</button>
+            </a>
+        </div>
     {% endfor %}
-
 {% else %}
-
-    <p>No notes yet</p>
-
+    <div class="note-card">
+        😢 No notes uploaded yet<br>
+        You can be the first to upload!
+    </div>
 {% endif %}
+</div>
 
 {% endblock %}

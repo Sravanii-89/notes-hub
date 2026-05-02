@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-
-<h2>{{ branch }} - Year {{ year }}</h2>
+<h2 class="section-title">{{ branch }} - Year {{ year }}</h2>
 
 <div class="grid">
-{% for subject in subjects %}
-    <a href="/notes/{{ branch }}/{{ year }}/{{ subject }}" class="card">
-        {{ subject }}
-    </a>
-{% endfor %}
+    {% for subject in subjects %}
+        <a href="/notes/{{ branch }}/{{ year }}/{{ subject }}" class="card">
+            {{ subject }}
+        </a>
+    {% endfor %}
 </div>
-
 {% endblock %}

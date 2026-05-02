@@ -1,34 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="breadcrumb">
-    <a href="/home">Home</a> >
-    <a href="/branch/{{ branch }}">{{ branch }}</a> >
-    <a href="/year/{{ branch }}/{{ year }}">Year {{ year }}</a> >
-    <span>Upload</span>
-</div>
-
-<h2 class="section-title">📤 Upload Notes for {{ subject }}</h2>
+<h2 class="section-title">Upload Notes</h2>
 
 <div class="auth-container">
-    <div class="auth-card">
+<div class="auth-box">
 
-        <form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data">
 
-            <input type="text" name="title" placeholder="Enter Title" required>
+<input type="text" name="title" placeholder="Title" required>
 
-            <!-- AUTO FILLED (LOCKED) -->
-            <input type="text" name="branch" value="{{ branch }}" readonly>
-            <input type="text" name="year" value="{{ year }}" readonly>
-            <input type="text" name="subject" value="{{ subject }}" readonly>
+<input type="text" name="branch" value="{{ branch }}" readonly>
+<input type="text" name="year" value="{{ year }}" readonly>
+<input type="text" name="subject" value="{{ subject }}" readonly>
 
-            <input type="file" name="file" accept=".pdf" required>
+<input type="file" name="file" accept="application/pdf" required>
 
-            <button type="submit">Upload PDF</button>
+<button type="submit">Upload PDF</button>
 
-        </form>
+</form>
 
-    </div>
+</div>
 </div>
 
 {% endblock %}

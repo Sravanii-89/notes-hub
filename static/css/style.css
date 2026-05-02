@@ -1,4 +1,4 @@
-/* ===== RESET ===== */
+/* RESET */
 * {
     margin: 0;
     padding: 0;
@@ -6,207 +6,106 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* ===== THEME ===== */
-:root {
-    --bg: #f8fafc;
-    --text: #0f172a;
-    --primary: #7c3aed;
-    --secondary: #06b6d4;
-    --card: rgba(255,255,255,0.9);
-    --border: rgba(0,0,0,0.08);
-}
-
-body.dark {
-    --bg: #020617;
-    --text: #e2e8f0;
-    --card: rgba(30,41,59,0.7);
-    --border: rgba(255,255,255,0.08);
-}
-
-/* ===== BODY ===== */
+/* BODY */
 body {
-    background: var(--bg);
-    color: var(--text);
-    transition: background 0.3s ease, color 0.3s ease;
+    background: #f8fafc;
+    color: #0f172a;
 }
 
-/* ===== APP LAYOUT ===== */
+/* LAYOUT */
 .app {
     display: flex;
     min-height: 100vh;
 }
 
-/* ===== SIDEBAR ===== */
+/* SIDEBAR */
 .sidebar {
     width: 220px;
-    background: linear-gradient(180deg, #0f172a, #1e293b);
+    background: #0f172a;
     color: white;
     padding: 20px;
 }
 
-.sidebar .brand {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
 .sidebar a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 10px;
+    display: block;
+    margin: 10px 0;
     color: #cbd5f5;
     text-decoration: none;
-    transition: 0.3s;
 }
 
-.sidebar a:hover {
-    background: rgba(124,58,237,0.2);
-    transform: translateX(5px);
-}
-
-/* ===== MAIN ===== */
+/* MAIN */
 .main {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-/* ===== TOPBAR ===== */
+/* TOPBAR */
 .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--border);
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
 }
 
-/* ===== CONTENT ===== */
+/* CONTENT */
 .content {
     padding: 20px;
-    max-width: 1000px;
-    margin: auto;
-    width: 100%;
 }
 
-/* ===== CARDS ===== */
-.card, .note-card {
-    padding: 20px;
-    border-radius: 12px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    text-align: center;
-    transition: 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px) scale(1.02);
-}
-
-/* ===== GRID ===== */
+/* GRID */
 .grid {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-/* ===== BUTTON ===== */
+/* CARD */
+.card, .note-card {
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* BUTTON */
 button {
-    background: var(--primary);
+    margin-top: 10px;
+    padding: 10px;
+    background: #7c3aed;
     color: white;
-    padding: 10px 15px;
     border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
+    border-radius: 6px;
 }
 
-button:hover {
-    background: var(--secondary);
-    box-shadow: 0 0 12px rgba(124,58,237,0.5);
-}
-
-/* ===== AUTH ===== */
+/* AUTH */
 .auth-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 80vh;
+    height: 80vh;
 }
 
 .auth-box {
-    width: 100%;
-    max-width: 400px;
-    padding: 30px;
-    border-radius: 12px;
-    background: var(--card);
-    border: 1px solid var(--border);
-}
-
-.auth-box form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    width: 300px;
 }
 
 .auth-box input {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
+    width: 100%;
+    margin: 8px 0;
+    padding: 8px;
 }
 
-/* ===== NOTES ===== */
-.notes-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* ===== FOOTER ===== */
+/* FOOTER */
 .footer {
     margin-top: auto;
-    background: linear-gradient(135deg, #7c3aed, #06b6d4);
-    color: white;
-    padding: 20px;
+    padding: 10px;
+    border-top: 1px solid #ddd;
 }
 
 .footer-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-}
-
-/* ===== SMOOTH ANIMATION ===== */
-.fade-in {
-    opacity: 0;
-    transform: translateY(10px);
-    animation: fadeInUp 0.5s ease forwards;
-}
-
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-
-    .app {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        display: flex;
-        justify-content: space-around;
-    }
-
-    .footer-container {
-        flex-direction: column;
-        text-align: center;
-    }
 }

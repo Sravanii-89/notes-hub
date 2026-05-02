@@ -1,41 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-
-<h2>Welcome, {{ user[0] if user else "User" }} 👋</h2>
-
-<!-- DASHBOARD STATS -->
-<div class="dashboard">
-    <div class="stat-card">
-        <h3>{{ total_notes }}</h3>
-        <p>Total Notes</p>
-    </div>
-
-    <div class="stat-card">
-        <h3>{{ total_downloads }}</h3>
-        <p>Total Downloads</p>
-    </div>
-</div>
-
-<!-- BRANCH SELECTION -->
-<h3>Select Your Branch</h3>
-
+<h2 class="section-title">Select Branch</h2>
 <div class="grid">
-
-<a href="/branch/CSE" class="card {% if user[1]=='CSE' %}active{% endif %}">💻 CSE</a>
-<a href="/branch/ECE" class="card {% if user[1]=='ECE' %}active{% endif %}">📡 ECE</a>
-<a href="/branch/EEE" class="card {% if user[1]=='EEE' %}active{% endif %}">⚡ EEE</a>
-<a href="/branch/MECH" class="card {% if user[1]=='MECH' %}active{% endif %}">⚙️ MECH</a>
-<a href="/branch/CIVIL" class="card {% if user[1]=='CIVIL' %}active{% endif %}">🏗️ CIVIL</a>
-<a href="/branch/IT" class="card {% if user[1]=='IT' %}active{% endif %}">💾 IT</a>
-
+    {% for b in branches %}
+        <a href="/branch/{{ b }}" class="card">{{ b }}</a>
+    {% endfor %}
 </div>
-
-<!-- PROFILE -->
-<div class="profile-card">
-    <h3>👤 Profile</h3>
-    <p><b>Name:</b> {{ user[0] }}</p>
-    <p><b>Branch:</b> {{ user[1] }}</p>
-    <p><b>Year:</b> {{ user[2] }}</p>
-</div>
-
 {% endblock %}

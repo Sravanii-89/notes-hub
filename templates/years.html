@@ -1,13 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
-<h2>{{ branch }} - Select Year</h2>
-
+<h2 class="section-title">{{ branch }} - Select Year</h2>
 <div class="grid">
-    <a href="/year/{{ branch }}/1" class="card">1st Year</a>
-    <a href="/year/{{ branch }}/2" class="card">2nd Year</a>
-    <a href="/year/{{ branch }}/3" class="card">3rd Year</a>
-    <a href="/year/{{ branch }}/4" class="card">4th Year</a>
+    {% for y in ["1","2","3","4"] %}
+        <a href="/year/{{ branch }}/{{ y }}" class="card">
+            {{ y }} Year
+        </a>
+    {% endfor %}
 </div>
-
 {% endblock %}
