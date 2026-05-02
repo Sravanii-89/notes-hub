@@ -135,6 +135,9 @@ def home():
     cur.close()
     conn.close()
 
+    if not user:
+        return redirect("/")
+
     return render_template(
         "home.html",
         total_notes=total_notes,
@@ -288,3 +291,4 @@ def download(note_id):
 # ---------- RUN ----------
 if __name__ == "__main__":
     app.run(debug=True)
+    app.debug = True
