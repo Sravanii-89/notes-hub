@@ -17,15 +17,19 @@
 <div class="notes-container">
 {% if notes %}
     {% for note in notes %}
-        <div class="note-card">
-            <h3>{{ note[1] }}</h3>
+    <div class="note-card">
+    <h3>{{ note[1] }}</h3>
 
-            <a href="{{ note[2] }}" target="_blank">📄 View</a>
+    <!-- GOOGLE PDF VIEWER -->
+    <iframe 
+        src="https://docs.google.com/gview?url={{ note[2] }}&embedded=true"
+        class="pdf-viewer">
+    </iframe>
 
-          <a href="/download/{{ note[0] }}">
-    <button>📥 Download</button>
-</a>
-        </div>
+    <a href="/download/{{ note[0] }}">
+        <button>📥 Download</button>
+    </a>
+</div>
     {% endfor %}
 {% else %}
     <div class="note-card">
