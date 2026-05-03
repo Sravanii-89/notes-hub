@@ -235,25 +235,28 @@ def upload():
                            subject=request.args.get("subject",""))
 
 
-# ---------- DOWNLOAD ----------
 @app.route("/download/<int:note_id>")
 def download(note_id):
     conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
-    note = cur.fetchone()
-
-    if not note:
-        return "File not found"
-
-    file_url = note[0]
-
-    cur.execute("UPDATE notes SET downloads = downloads + 1 WHERE id=%s", (note_id,))
-    conn.commit()
+    cur.execute("SELECT file_url FROM notes WHERE id=%s", (note_id,))
+    file = cur.fetchone()
 
     cur.close()
     conn.close()
+
+    if not file:
+        return "File not found", 404
+
+    file_url = file[0]
+
+    # ✅ Force correct filename + download
+    if "/upload/" in file_url:
+        file_url = file_url.replace(
+            "/upload/",
+            "/upload/fl_attachment:notes.pdf/"
+        )
 
     return redirect(file_url)
 
