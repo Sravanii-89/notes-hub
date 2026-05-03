@@ -1,42 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="breadcrumb">
-    <a href="/home">Home</a> >
-    <a href="/branch/{{ branch }}">{{ branch }}</a> >
-    <a href="/year/{{ branch }}/{{ year }}">Year {{ year }}</a> >
-    <span>{{ subject }}</span>
-</div>
-
-<h2 class="section-title">{{ subject }} Notes</h2>
+<h2>{{ subject }} Notes</h2>
 
 <a href="/upload?branch={{ branch }}&year={{ year }}&subject={{ subject }}">
-    <button>➕ Upload Notes</button>
+    <button>Upload Notes</button>
 </a>
 
-<div class="notes-container">
-{% if notes %}
-    {% for note in notes %}
-    <div class="note-card">
+{% for note in notes %}
+<div class="note-card">
     <h3>{{ note[1] }}</h3>
 
-    <!-- GOOGLE PDF VIEWER -->
-     <iframe 
-src="https://mozilla.github.io/pdf.js/web/viewer.html?file={{ note[2] }}"
-class="pdf-viewer">
-</iframe>
+    <iframe src="{{ note[2] }}" class="pdf-viewer"></iframe>
 
     <a href="/download/{{ note[0] }}">
-        <button>📥 Download</button>
+        <button>Download</button>
     </a>
 </div>
-    {% endfor %}
-{% else %}
-    <div class="note-card">
-        😢 No notes uploaded yet<br>
-        You can be the first to upload!
-    </div>
-{% endif %}
-</div>
+{% endfor %}
 
 {% endblock %}

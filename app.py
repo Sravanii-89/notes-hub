@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, redirect, session
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
 import cloudinary
@@ -36,9 +36,7 @@ def init_db():
         subject TEXT,
         branch TEXT,
         year TEXT,
-        file_path TEXT,
-        uploaded_by INTEGER,
-        downloads INTEGER DEFAULT 0
+        file_path TEXT
     )
     """)
 
@@ -62,48 +60,18 @@ subjects_data = {
         "2": ["Data Structures","Database Management Systems","Operating Systems","Computer Networks","OOPs using Java","Discrete Mathematics"],
         "3": ["Compiler Design","Machine Learning","Artificial Intelligence","Web Technologies","Software Engineering","Data Analytics"],
         "4": ["Cloud Computing","Cyber Security","Big Data","Blockchain","Deep Learning","Project Work"]
-    },
-    "ECE": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Basic Electrical Engineering","English","Engineering Graphics"],
-        "2": ["Electronic Devices","Signals and Systems","Digital Logic Design","Network Theory","Mathematics II"],
-        "3": ["Analog Communications","Microprocessors","Control Systems","Digital Signal Processing","VLSI Design"],
-        "4": ["Wireless Communication","Embedded Systems","IoT","Satellite Communication","Project Work"]
-    },
-    "EEE": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Basic Electrical Engineering","English"],
-        "2": ["Electrical Machines I","Network Theory","Control Systems","Electrical Measurements","Mathematics II"],
-        "3": ["Power Systems","Electrical Machines II","Power Electronics","Microcontrollers"],
-        "4": ["Renewable Energy Systems","Smart Grid","HVDC Transmission","Project Work"]
-    },
-    "MECH": {
-        "1": ["Engineering Mechanics","Engineering Physics","Mathematics I","Engineering Graphics","English"],
-        "2": ["Thermodynamics","Fluid Mechanics","Manufacturing Processes","Strength of Materials"],
-        "3": ["Machine Design","Heat Transfer","Dynamics of Machines","Industrial Engineering"],
-        "4": ["CAD/CAM","Robotics","Automation","Project Work"]
-    },
-    "CIVIL": {
-        "1": ["Engineering Mechanics","Engineering Physics","Mathematics I","Engineering Graphics","English"],
-        "2": ["Structural Analysis","Fluid Mechanics","Geotechnical Engineering","Surveying"],
-        "3": ["Reinforced Concrete","Environmental Engineering","Transportation Engineering"],
-        "4": ["Construction Management","Urban Planning","Project Work"]
-    },
-    "IT": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English"],
-        "2": ["Data Structures","Database Systems","Operating Systems","Computer Networks"],
-        "3": ["Web Technologies","Software Engineering","Machine Learning","Cloud Computing"],
-        "4": ["Cyber Security","Big Data Analytics","AI","Project Work"]
     }
 }
 
-# ---------- AUTH ----------
+# ---------- LOGIN ----------
 @app.route("/", methods=["GET","POST"])
 def login():
     if request.method == "POST":
         conn = get_db()
         cur = conn.cursor()
 
-        email = request.form.get("email")
-        password = request.form.get("password")
+        email = request.form["email"]
+        password = request.form["password"]
 
         cur.execute("SELECT * FROM users WHERE email=%s", (email,))
         user = cur.fetchone()
@@ -111,35 +79,36 @@ def login():
         cur.close()
         conn.close()
 
-        if not user:
-            return "User not found"
-        if not check_password_hash(user[3], password):
-            return "Wrong password"
+        if user and check_password_hash(user[3], password):
+            session["user_id"] = user[0]
+            return redirect("/home")
 
-        session["user_id"] = user[0]
-        return redirect("/home")
+        return "Invalid login"
 
     return render_template("login.html")
 
 
+# ---------- REGISTER ----------
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
         conn = get_db()
         cur = conn.cursor()
 
-        name = request.form.get("name")
-        email = request.form.get("email")
-        password = generate_password_hash(request.form.get("password"))
-        branch = request.form.get("branch")
-        year = request.form.get("year")
-
         try:
-            cur.execute("INSERT INTO users(name,email,password,branch,year) VALUES(%s,%s,%s,%s,%s)",
-                        (name,email,password,branch,year))
+            cur.execute("""
+                INSERT INTO users(name,email,password,branch,year)
+                VALUES(%s,%s,%s,%s,%s)
+            """, (
+                request.form["name"],
+                request.form["email"],
+                generate_password_hash(request.form["password"]),
+                request.form["branch"],
+                request.form["year"]
+            ))
             conn.commit()
         except:
-            return "Email already exists"
+            return "Email exists"
 
         cur.close()
         conn.close()
@@ -153,8 +122,7 @@ def register():
 def home():
     if "user_id" not in session:
         return redirect("/")
-    branches = list(subjects_data.keys())
-    return render_template("home.html", branches=branches)
+    return render_template("home.html", branches=list(subjects_data.keys()))
 
 
 @app.route("/branch/<branch>")
@@ -168,6 +136,7 @@ def year_page(branch, year):
     return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
 
 
+# ---------- NOTES ----------
 @app.route("/notes/<branch>/<year>/<subject>")
 def notes(branch, year, subject):
     conn = get_db()
@@ -187,34 +156,39 @@ def notes(branch, year, subject):
 
 
 # ---------- UPLOAD ----------
-@app.route("/upload", methods=["GET", "POST"])
+@app.route("/upload", methods=["GET","POST"])
 def upload():
+    branch = request.args.get("branch")
+    year = request.args.get("year")
+    subject = request.args.get("subject")
+
     if request.method == "POST":
-        title = request.form["title"]
-        branch = request.form["branch"]
-        year = request.form["year"]
-        subject = request.form["subject"]
         file = request.files["file"]
 
-        if file:
-            result = cloudinary.uploader.upload(file, resource_type="raw")
-            file_url = result["secure_url"]
+        result = cloudinary.uploader.upload(file, resource_type="raw")
+        file_url = result["secure_url"]
 
-            conn = get_db()
-            cur = conn.cursor()
+        conn = get_db()
+        cur = conn.cursor()
 
-            cur.execute("""
-                INSERT INTO notes (title, branch, year, subject, file_path)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (title, branch, year, subject, file_url))
+        cur.execute("""
+            INSERT INTO notes (title, branch, year, subject, file_path)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            request.form["title"],
+            request.form["branch"],
+            request.form["year"],
+            request.form["subject"],
+            file_url
+        ))
 
-            conn.commit()
-            cur.close()
-            conn.close()
+        conn.commit()
+        cur.close()
+        conn.close()
 
-            return redirect(f"/notes/{branch}/{year}/{subject}")
+        return redirect(f"/notes/{branch}/{year}/{subject}")
 
-    return render_template("upload.html")
+    return render_template("upload.html", branch=branch, year=year, subject=subject)
 
 
 # ---------- DOWNLOAD ----------
@@ -232,13 +206,7 @@ def download(note_id):
     if not note:
         return "File not found", 404
 
-    file_url = note[0]
-
-    # force download
-    if "res.cloudinary.com" in file_url:
-        file_url = file_url.replace("/upload/", "/raw/upload/") + "?fl_attachment=true"
-
-    return redirect(file_url)
+    return redirect(note[0])
 
 
 if __name__ == "__main__":
