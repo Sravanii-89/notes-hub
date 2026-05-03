@@ -1,30 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2 class="section-title">Upload Notes</h2>
+<h2>Upload Notes</h2>
 
 <div class="upload-container">
-    <form method="POST" enctype="multipart/form-data"
-          action="/upload?branch={{ branch }}&year={{ year }}&subject={{ subject }}"
-          class="upload-box">
 
-        <label>Title</label>
-        <input type="text" name="title" required>
+<form method="POST" enctype="multipart/form-data" class="upload-box">
 
-        <label>Branch</label>
-        <input type="text" name="branch" value="{{ branch }}" readonly>
+    <label>Title</label>
+    <input type="text" name="title" required>
 
-        <label>Year</label>
-        <input type="text" name="year" value="{{ year }}" readonly>
+    <!-- HIDDEN VALUES (IMPORTANT FIX) -->
+    <input type="hidden" name="branch" value="{{ branch }}">
+    <input type="hidden" name="year" value="{{ year }}">
+    <input type="hidden" name="subject" value="{{ subject }}">
 
-        <label>Subject</label>
-        <input type="text" name="subject" value="{{ subject }}" readonly>
+    <label>Upload PDF</label>
+    <input type="file" name="file" required>
 
-        <label>Upload PDF</label>
-        <input type="file" name="file" required>
+    <button type="submit">Upload PDF</button>
 
-        <button type="submit">Upload PDF</button>
-    </form>
+</form>
+
 </div>
 
 {% endblock %}

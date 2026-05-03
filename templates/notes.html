@@ -3,9 +3,12 @@
 
 <h2>{{ subject }} Notes</h2>
 
-<a href="/upload?branch={{ branch }}&year={{ year }}&subject={{ subject }}">
-    <button>Upload Notes</button>
-</a>
+<form action="/upload" method="GET">
+    <input type="hidden" name="branch" value="{{ branch }}">
+    <input type="hidden" name="year" value="{{ year }}">
+    <input type="hidden" name="subject" value="{{ subject }}">
+    <button type="submit">Upload Notes</button>
+</form>
 
 {% for note in notes %}
 <div class="note-card">

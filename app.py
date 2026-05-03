@@ -156,13 +156,13 @@ def notes(branch, year, subject):
 
 
 # ---------- UPLOAD ----------
-@app.route("/upload", methods=["GET","POST"])
+@app.route("/upload", methods=["GET", "POST"])
 def upload():
-    branch = request.args.get("branch")
-    year = request.args.get("year")
-    subject = request.args.get("subject")
-
     if request.method == "POST":
+        title = request.form["title"]
+        branch = request.form["branch"]
+        year = request.form["year"]
+        subject = request.form["subject"]
         file = request.files["file"]
 
         result = cloudinary.uploader.upload(file, resource_type="raw")
@@ -174,13 +174,7 @@ def upload():
         cur.execute("""
             INSERT INTO notes (title, branch, year, subject, file_path)
             VALUES (%s, %s, %s, %s, %s)
-        """, (
-            request.form["title"],
-            request.form["branch"],
-            request.form["year"],
-            request.form["subject"],
-            file_url
-        ))
+        """, (title, branch, year, subject, file_url))
 
         conn.commit()
         cur.close()
@@ -188,9 +182,13 @@ def upload():
 
         return redirect(f"/notes/{branch}/{year}/{subject}")
 
-    return render_template("upload.html", branch=branch, year=year, subject=subject)
-
-
+    # GET
+    return render_template(
+        "upload.html",
+        branch=request.args.get("branch"),
+        year=request.args.get("year"),
+        subject=request.args.get("subject")
+    )
 # ---------- DOWNLOAD ----------
 @app.route("/download/<int:note_id>")
 def download(note_id):
