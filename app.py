@@ -1,216 +1,182 @@
 import os
-from flask import Flask, render_template, request, redirect, session
 import psycopg2
-from werkzeug.security import generate_password_hash, check_password_hash
 import cloudinary
 import cloudinary.uploader
+from flask import Flask, render_template, request, redirect, session, send_file, abort
+from werkzeug.utils import secure_filename
+import requests
+from io import BytesIO
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
+app.secret_key = os.getenv("SECRET_KEY", "secret")
 
+# -----------------------------
+# DATABASE FIX (IMPORTANT)
+# -----------------------------
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-def get_db():
-    return psycopg2.connect(DATABASE_URL, sslmode="require")
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# ---------- INIT DB ----------
-def init_db():
-    conn = get_db()
-    cur = conn.cursor()
+conn = psycopg2.connect(DATABASE_URL, sslmode="require")
+cur = conn.cursor()
 
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS users(
-        id SERIAL PRIMARY KEY,
-        name TEXT,
-        email TEXT UNIQUE,
-        password TEXT,
-        branch TEXT,
-        year TEXT
-    )
-    """)
-
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS notes(
-        id SERIAL PRIMARY KEY,
-        title TEXT,
-        subject TEXT,
-        branch TEXT,
-        year TEXT,
-        file_path TEXT
-    )
-    """)
-
-    conn.commit()
-    cur.close()
-    conn.close()
-
-init_db()
-
-# ---------- CLOUDINARY ----------
+# -----------------------------
+# CLOUDINARY CONFIG
+# -----------------------------
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
-# ---------- SUBJECT DATA ----------
-subjects_data = {
-    "CSE": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
-        "2": ["Data Structures","Database Management Systems","Operating Systems","Computer Networks","OOPs using Java","Discrete Mathematics"],
-        "3": ["Compiler Design","Machine Learning","Artificial Intelligence","Web Technologies","Software Engineering","Data Analytics"],
-        "4": ["Cloud Computing","Cyber Security","Big Data","Blockchain","Deep Learning","Project Work"]
-    },
-    "ECE": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
-        "2": ["Electronic Devices","Circuit Analysis","Electromagnetic Fields","Signals and Systems","Digital Logic Design","Communication Engineering"],
-        "3": ["Control Systems","Power Electronics","Microprocessors","VLSI Design","Antennas and Wave Propagation","Optical Communication"],
-        "4": ["Renewable Energy Systems","Power Systems","Telecommunication Engineering","Embedded Systems","Wireless Communication","Project Work"]
-    },
-    "EEE": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
-        "2": ["Circuit Analysis","Electromagnetic Fields","Signals and Systems","Electrical Machines","Power Systems","Control Systems"],
-        "3": ["Power Electronics","Microprocessors","Renewable Energy Systems","Power System Protection","Electrical Measurements","Project Work"],
-        "4": ["Smart Grid Technology","High Voltage Engineering","Electric Vehicle Technology","Energy Storage Systems","Power System Stability","Project Work"]
-    },
-    "CIVIL": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
-        "2": ["Strength of Materials","Fluid Mechanics","Surveying","Structural Analysis","Geotechnical Engineering","Construction Materials"],
-        "3": ["Transportation Engineering","Environmental Engineering","Water Resources Engineering","Concrete Technology","Project Management","Project Work"],
-        "4": ["Advanced Structural Analysis","Earthquake Engineering","Sustainable Construction Practices","Construction Planning and Management","Hydrology and Irrigation Engineering","Project Work"]
-    },
-    "MECH": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
-        "2": ["Engineering Mechanics","Thermodynamics","Fluid Mechanics","Manufacturing Processes","Material Science","Dynamics of Machinery"],
-        "3": ["Heat Transfer","Machine Design","Control Systems","Automobile Engineering","Robotics","Project Work"],
-        "4": ["Renewable Energy Systems","Finite Element Analysis","Mechatronics","Computer-Aided Design (CAD)","Advanced Manufacturing Processes","Project Work"]
-    },
-    "IT": {
-        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
-        "2": ["Data Structures","Database Management Systems","Operating Systems","Computer Networks","OOPs using Java","Discrete Mathematics"],
-        "3": ["Compiler Design","Machine Learning","Artificial Intelligence","Web Technologies","Software Engineering","Data Analytics"],
-        "4": ["Cloud Computing","Cyber Security","Big Data","Blockchain","Deep Learning","Project Work"]
-    }
-}
-
-# ---------- ROUTES ----------
-
-@app.route("/", methods=["GET","POST"])
-def login():
-    if request.method == "POST":
-        conn = get_db()
-        cur = conn.cursor()
-
-        cur.execute("SELECT * FROM users WHERE email=%s", (request.form["email"],))
-        user = cur.fetchone()
-
-        cur.close()
-        conn.close()
-
-        if user and check_password_hash(user[3], request.form["password"]):
-            session["user_id"] = user[0]
-            return redirect("/home")
-
-        return "Invalid login"
-
-    return render_template("login.html")
+# -----------------------------
+# INIT TABLE (SAFE)
+# -----------------------------
+cur.execute("""
+CREATE TABLE IF NOT EXISTS notes (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    branch TEXT,
+    year TEXT,
+    subject TEXT,
+    file_url TEXT
+)
+""")
+conn.commit()
 
 
+# -----------------------------
+# HOME
+# -----------------------------
 @app.route("/home")
 def home():
-    if "user_id" not in session:
-        return redirect("/")
-    return render_template("home.html", branches=list(subjects_data.keys()))
+    branches = ["CSE", "ECE", "EEE", "MECH"]
+    return render_template("home.html", branches=branches)
 
 
+# -----------------------------
+# YEARS
+# -----------------------------
 @app.route("/branch/<branch>")
-def branch_page(branch):
+def branch(branch):
     return render_template("years.html", branch=branch)
 
 
+# -----------------------------
+# SUBJECTS
+# -----------------------------
 @app.route("/year/<branch>/<year>")
-def year_page(branch, year):
-    subjects = subjects_data.get(branch, {}).get(year, [])
-    return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
+def year(branch, year):
+    subjects = [
+        "Mathematics",
+        "Physics",
+        "Chemistry",
+        "Database Management Systems",
+        "Operating Systems",
+        "Computer Networks"
+    ]
+    return render_template("subjects.html", branch=branch, year=year, subjects=subjects)
 
 
+# -----------------------------
+# NOTES PAGE
+# -----------------------------
 @app.route("/notes/<branch>/<year>/<subject>")
 def notes(branch, year, subject):
-    conn = get_db()
-    cur = conn.cursor()
+    cur.execute(
+        "SELECT * FROM notes WHERE branch=%s AND year=%s AND subject=%s",
+        (branch, year, subject)
+    )
+    data = cur.fetchall()
 
-    cur.execute("""
-        SELECT id, title, file_path FROM notes
-        WHERE branch=%s AND year=%s AND subject=%s
-    """, (branch, year, subject))
-
-    notes = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return render_template("notes.html", notes=notes, branch=branch, year=year, subject=subject)
+    return render_template(
+        "notes.html",
+        notes=data,
+        branch=branch,
+        year=year,
+        subject=subject
+    )
 
 
-# ---------- UPLOAD ----------
+# -----------------------------
+# UPLOAD PAGE
+# -----------------------------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
-    if request.method == "GET":
-        return render_template(
-            "upload.html",
-            branch=request.args.get("branch"),
-            year=request.args.get("year"),
-            subject=request.args.get("subject")
+    if request.method == "POST":
+        try:
+            title = request.form["title"]
+            branch = request.form["branch"]
+            year = request.form["year"]
+            subject = request.form["subject"]
+            file = request.files["file"]
+
+            if file.filename == "":
+                return "No file selected"
+
+            filename = secure_filename(file.filename)
+
+            # Upload to Cloudinary
+            result = cloudinary.uploader.upload(
+                file,
+                resource_type="raw"
+            )
+
+            file_url = result["secure_url"]
+
+            # Save to DB
+            cur.execute(
+                "INSERT INTO notes (title, branch, year, subject, file_url) VALUES (%s,%s,%s,%s,%s)",
+                (title, branch, year, subject, file_url)
+            )
+            conn.commit()
+
+            return redirect(f"/notes/{branch}/{year}/{subject}")
+
+        except Exception as e:
+            return f"Upload Error: {str(e)}"
+
+    return render_template("upload.html")
+
+
+# -----------------------------
+# DOWNLOAD FIX (IMPORTANT)
+# -----------------------------
+@app.route("/download/<int:id>")
+def download(id):
+    try:
+        cur.execute("SELECT * FROM notes WHERE id=%s", (id,))
+        note = cur.fetchone()
+
+        if not note:
+            return "File not found"
+
+        file_url = note[5]   # correct column
+
+        response = requests.get(file_url)
+
+        return send_file(
+            BytesIO(response.content),
+            as_attachment=True,
+            download_name="notes.pdf",   # FIXED EXTENSION
+            mimetype="application/pdf"
         )
 
-    file = request.files["file"]
-
-    result = cloudinary.uploader.upload(file, resource_type="raw")
-    file_url = result["secure_url"]
-
-    conn = get_db()
-    cur = conn.cursor()
-
-    cur.execute("""
-        INSERT INTO notes (title, branch, year, subject, file_path)
-        VALUES (%s, %s, %s, %s, %s)
-    """, (
-        request.form["title"],
-        request.form["branch"],
-        request.form["year"],
-        request.form["subject"],
-        file_url
-    ))
-
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return redirect(f"/notes/{request.form['branch']}/{request.form['year']}/{request.form['subject']}")
+    except Exception as e:
+        return f"Download Error: {str(e)}"
 
 
-# ---------- DOWNLOAD ----------from flask import redirect
-
-@app.route('/download/<int:id>')
-def download(id):
-    conn = get_db()
-    cur = conn.cursor()
-
-    cur.execute("SELECT * FROM notes WHERE id=%s", (id,))
-    note = cur.fetchone()
-
-    cur.close()
-    conn.close()
-
-    if not note:
-        return "File not found", 404
-
-    file_url = note[5]  # correct column
-    filename = note[1] + ".pdf"  # use title as filename
-
-    # ✅ FORCE correct download name + extension
-    return redirect(file_url + f"?fl_attachment={filename}")
+# -----------------------------
+# ROOT REDIRECT
+# -----------------------------
+@app.route("/")
+def index():
+    return redirect("/home")
 
 
+# -----------------------------
+# RUN
+# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)
