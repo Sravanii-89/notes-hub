@@ -241,23 +241,18 @@ def download(note_id):
     cur = conn.cursor()
 
     cur.execute("SELECT file_url FROM notes WHERE id=%s", (note_id,))
-    file = cur.fetchone()
+    note = cur.fetchone()
 
     cur.close()
     conn.close()
 
-    if not file:
+    # ✅ FIX: check if note exists
+    if note is None:
         return "File not found", 404
 
-    file_url = file[0]
-
-    # ✅ Force correct filename + download
-    if "/upload/" in file_url:
-        file_url = file_url.replace(
-            "/upload/",
-            "/upload/fl_attachment:notes.pdf/"
-        )
-
+    file_url = note[0]
+    print("NOTE:", note)
+    print("NOTE_ID:", note_id)
     return redirect(file_url)
 
 if __name__ == "__main__":
