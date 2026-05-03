@@ -53,9 +53,39 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
-# ---------- SUBJECT DATA ----------
+# ---------- SUBJECT DATA (FIXED) ----------
 subjects_data = {
     "CSE": {
+        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
+        "2": ["Data Structures","Database Management Systems","Operating Systems","Computer Networks","OOPs using Java","Discrete Mathematics"],
+        "3": ["Compiler Design","Machine Learning","Artificial Intelligence","Web Technologies","Software Engineering","Data Analytics"],
+        "4": ["Cloud Computing","Cyber Security","Big Data","Blockchain","Deep Learning","Project Work"]
+    },
+    "ECE": {
+        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
+        "2": ["Electronic Devices","Circuit Analysis","Electromagnetic Fields","Signals and Systems","Digital Logic Design","Communication Engineering"],
+        "3": ["Control Systems","Power Electronics","Microprocessors","VLSI Design","Antennas and Wave Propagation","Optical Communication"],
+        "4": ["Renewable Energy Systems","Power Systems","Telecommunication Engineering","Embedded Systems","Wireless Communication","Project Work"]
+    },
+    "EEE": {
+        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
+        "2": ["Circuit Analysis","Electromagnetic Fields","Signals and Systems","Electrical Machines","Power Systems","Control Systems"],
+        "3": ["Power Electronics","Microprocessors","Renewable Energy Systems","Power System Protection","Electrical Measurements","Project Work"],
+        "4": ["Smart Grid Technology","High Voltage Engineering","Electric Vehicle Technology","Energy Storage Systems","Power System Stability","Project Work"]
+    },
+    "CIVIL": {
+        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
+        "2": ["Strength of Materials","Fluid Mechanics","Surveying","Structural Analysis","Geotechnical Engineering","Construction Materials"],
+        "3": ["Transportation Engineering","Environmental Engineering","Water Resources Engineering","Concrete Technology","Project Management","Project Work"],
+        "4": ["Advanced Structural Analysis","Earthquake Engineering","Sustainable Construction Practices","Construction Planning and Management","Hydrology and Irrigation Engineering","Project Work"]
+    },
+    "MECH": {
+        "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
+        "2": ["Engineering Mechanics","Thermodynamics","Fluid Mechanics","Manufacturing Processes","Material Science","Dynamics of Machinery"],
+        "3": ["Heat Transfer","Machine Design","Control Systems","Automobile Engineering","Robotics","Project Work"],
+        "4": ["Renewable Energy Systems","Finite Element Analysis","Mechatronics","Computer-Aided Design (CAD)","Advanced Manufacturing Processes","Project Work"]
+    },
+    "IT": {
         "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
         "2": ["Data Structures","Database Management Systems","Operating Systems","Computer Networks","OOPs using Java","Discrete Mathematics"],
         "3": ["Compiler Design","Machine Learning","Artificial Intelligence","Web Technologies","Software Engineering","Data Analytics"],
@@ -63,7 +93,7 @@ subjects_data = {
     }
 }
 
-# ---------- LOGIN ----------
+# ---------- ROUTES ----------
 @app.route("/", methods=["GET","POST"])
 def login():
     if request.method == "POST":
@@ -88,7 +118,6 @@ def login():
     return render_template("login.html")
 
 
-# ---------- REGISTER ----------
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
@@ -117,7 +146,6 @@ def register():
     return render_template("register.html")
 
 
-# ---------- HOME ----------
 @app.route("/home")
 def home():
     if "user_id" not in session:
@@ -136,7 +164,6 @@ def year_page(branch, year):
     return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
 
 
-# ---------- NOTES ----------
 @app.route("/notes/<branch>/<year>/<subject>")
 def notes(branch, year, subject):
     conn = get_db()
@@ -155,10 +182,8 @@ def notes(branch, year, subject):
     return render_template("notes.html", notes=notes, branch=branch, year=year, subject=subject)
 
 
-# ---------- UPLOAD ----------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
-    # GET → open page with values
     if request.method == "GET":
         return render_template(
             "upload.html",
@@ -167,21 +192,15 @@ def upload():
             subject=request.args.get("subject")
         )
 
-    # POST → upload file
     title = request.form["title"]
     branch = request.form["branch"]
     year = request.form["year"]
     subject = request.form["subject"]
     file = request.files["file"]
 
-    if not file:
-        return "No file selected"
-
-    # Upload to Cloudinary
-    result = cloudinary.uploader.upload(file, resource_type="raw")
+    result = cloudinary.uploader.upload(file, resource_type="auto")
     file_url = result["secure_url"]
 
-    # Save to DB
     conn = get_db()
     cur = conn.cursor()
 
@@ -195,13 +214,14 @@ def upload():
     conn.close()
 
     return redirect(f"/notes/{branch}/{year}/{subject}")
-# ---------- DOWNLOAD ----------
+
+
 @app.route("/download/<int:note_id>")
 def download(note_id):
     conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
+    cur.execute("SELECT title, file_path FROM notes WHERE id=%s", (note_id,))
     note = cur.fetchone()
 
     cur.close()
@@ -210,7 +230,7 @@ def download(note_id):
     if not note:
         return "File not found", 404
 
-    return redirect(note[0])
+    return redirect(note[1])
 
 
 if __name__ == "__main__":
