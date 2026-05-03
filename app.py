@@ -158,37 +158,43 @@ def notes(branch, year, subject):
 # ---------- UPLOAD ----------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
-    if request.method == "POST":
-        title = request.form["title"]
-        branch = request.form["branch"]
-        year = request.form["year"]
-        subject = request.form["subject"]
-        file = request.files["file"]
+    # GET → open page with values
+    if request.method == "GET":
+        return render_template(
+            "upload.html",
+            branch=request.args.get("branch"),
+            year=request.args.get("year"),
+            subject=request.args.get("subject")
+        )
 
-        result = cloudinary.uploader.upload(file, resource_type="raw")
-        file_url = result["secure_url"]
+    # POST → upload file
+    title = request.form["title"]
+    branch = request.form["branch"]
+    year = request.form["year"]
+    subject = request.form["subject"]
+    file = request.files["file"]
 
-        conn = get_db()
-        cur = conn.cursor()
+    if not file:
+        return "No file selected"
 
-        cur.execute("""
-            INSERT INTO notes (title, branch, year, subject, file_path)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (title, branch, year, subject, file_url))
+    # Upload to Cloudinary
+    result = cloudinary.uploader.upload(file, resource_type="raw")
+    file_url = result["secure_url"]
 
-        conn.commit()
-        cur.close()
-        conn.close()
+    # Save to DB
+    conn = get_db()
+    cur = conn.cursor()
 
-        return redirect(f"/notes/{branch}/{year}/{subject}")
+    cur.execute("""
+        INSERT INTO notes (title, branch, year, subject, file_path)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (title, branch, year, subject, file_url))
 
-    # GET
-    return render_template(
-        "upload.html",
-        branch=request.args.get("branch"),
-        year=request.args.get("year"),
-        subject=request.args.get("subject")
-    )
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return redirect(f"/notes/{branch}/{year}/{subject}")
 # ---------- DOWNLOAD ----------
 @app.route("/download/<int:note_id>")
 def download(note_id):
