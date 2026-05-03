@@ -148,7 +148,7 @@ def register():
     return render_template("register.html")
 
 
-# ---------- HOME (BRANCHES) ----------
+# ---------- HOME ----------
 @app.route("/home")
 def home():
     if "user_id" not in session:
@@ -157,103 +157,89 @@ def home():
     return render_template("home.html", branches=branches)
 
 
-# ---------- YEAR PAGE ----------
 @app.route("/branch/<branch>")
 def branch_page(branch):
     return render_template("years.html", branch=branch)
 
 
-# ---------- SUBJECT PAGE ----------
 @app.route("/year/<branch>/<year>")
 def year_page(branch, year):
     subjects = subjects_data.get(branch, {}).get(year, [])
     return render_template("subjects.html", subjects=subjects, branch=branch, year=year)
 
 
-# ---------- NOTES PAGE ----------
 @app.route("/notes/<branch>/<year>/<subject>")
 def notes(branch, year, subject):
     conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("""SELECT id, title, file_path FROM notes
-                   WHERE branch=%s AND year=%s AND subject=%s""",
-                (branch, year, subject))
+    cur.execute("""
+        SELECT id, title, file_path FROM notes
+        WHERE branch=%s AND year=%s AND subject=%s
+    """, (branch, year, subject))
+
     notes = cur.fetchall()
 
     cur.close()
     conn.close()
 
-    return render_template("notes.html",
-                           notes=notes,
-                           branch=branch,
-                           year=year,
-                           subject=subject)
+    return render_template("notes.html", notes=notes, branch=branch, year=year, subject=subject)
 
 
 # ---------- UPLOAD ----------
-@app.route("/upload", methods=["GET","POST"])
+@app.route("/upload", methods=["GET", "POST"])
 def upload():
-    if "user_id" not in session:
-        return redirect("/")
-
     if request.method == "POST":
-        title = request.form.get("title")
-        branch = request.form.get("branch")
-        year = request.form.get("year")
-        subject = request.form.get("subject")
-        file = request.files.get("file")
+        title = request.form["title"]
+        branch = request.form["branch"]
+        year = request.form["year"]
+        subject = request.form["subject"]
+        file = request.files["file"]
 
-        if not file:
-            return "No file selected"
+        if file:
+            result = cloudinary.uploader.upload(file, resource_type="raw")
+            file_url = result["secure_url"]
 
-        # Upload as RAW so PDFs open without 401
-        result = cloudinary.uploader.upload(
-            file,
-            resource_type="raw"
-        )
-        file_url = result.get("secure_url")
+            conn = get_db()
+            cur = conn.cursor()
 
-        conn = get_db()
-        cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO notes (title, branch, year, subject, file_path)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (title, branch, year, subject, file_url))
 
-        cur.execute("""
-            INSERT INTO notes(title,subject,branch,year,file_path,uploaded_by)
-            VALUES(%s,%s,%s,%s,%s,%s)
-        """, (title, subject, branch, year, file_url, session["user_id"]))
+            conn.commit()
+            cur.close()
+            conn.close()
 
-        conn.commit()
-        cur.close()
-        conn.close()
+            return redirect(f"/notes/{branch}/{year}/{subject}")
 
-        return redirect(f"/notes/{branch}/{year}/{subject}")
-
-    # GET (auto-fill from URL)
-    return render_template("upload.html",
-                           branch=request.args.get("branch",""),
-                           year=request.args.get("year",""),
-                           subject=request.args.get("subject",""))
+    return render_template("upload.html")
 
 
+# ---------- DOWNLOAD ----------
 @app.route("/download/<int:note_id>")
 def download(note_id):
     conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("SELECT file_url FROM notes WHERE id=%s", (note_id,))
+    cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
     note = cur.fetchone()
 
     cur.close()
     conn.close()
 
-    # ✅ FIX: check if note exists
-    if note is None:
+    if not note:
         return "File not found", 404
 
     file_url = note[0]
-    print("NOTE:", note)
-    print("NOTE_ID:", note_id)
+
+    # force download
+    if "res.cloudinary.com" in file_url:
+        file_url = file_url.replace("/upload/", "/raw/upload/") + "?fl_attachment=true"
+
     return redirect(file_url)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
