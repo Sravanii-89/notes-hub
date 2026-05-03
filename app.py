@@ -210,8 +210,7 @@ def upload():
         # Upload as RAW so PDFs open without 401
         result = cloudinary.uploader.upload(
             file,
-            resource_type="raw",
-            format="pdf"
+            resource_type="raw"
         )
         file_url = result.get("secure_url")
 
@@ -256,7 +255,7 @@ def download(note_id):
     cur.close()
     conn.close()
 
-    return redirect(file_url + "?fl_attachment=true")
+    return redirect(file_url)
 
 if __name__ == "__main__":
     app.run(debug=True)
