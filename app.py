@@ -208,7 +208,11 @@ def upload():
             return "No file selected"
 
         # Upload as RAW so PDFs open without 401
-        result = cloudinary.uploader.upload(file, resource_type="raw")
+        result = cloudinary.uploader.upload(
+            file,
+            resource_type="raw",
+            format="pdf"
+        )
         file_url = result.get("secure_url")
 
         conn = get_db()
@@ -252,7 +256,16 @@ def download(note_id):
     cur.close()
     conn.close()
 
-    return redirect(file_url)
+    return redirect(file_url + "?fl_attachment=true")
+@app.route("/clear")
+def clear_notes():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM notes")
+    conn.commit()
+    cur.close()
+    conn.close()
+    return "All notes deleted"
 
 
 if __name__ == "__main__":
