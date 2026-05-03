@@ -165,7 +165,7 @@ def upload():
 
     file = request.files["file"]
 
-    result = cloudinary.uploader.upload(file, resource_type="auto")
+    result = cloudinary.uploader.upload(file, resource_type="raw")
     file_url = result["secure_url"]
 
     conn = get_db()
@@ -190,12 +190,12 @@ def upload():
 
 
 # ---------- DOWNLOAD ----------
-@app.route("/download/<int:note_id>")
-def download(note_id):
+@app.route('/download/<int:id>')
+def download(id):
     conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
+    cur.execute("SELECT * FROM notes WHERE id=%s", (id,))
     note = cur.fetchone()
 
     cur.close()
@@ -204,7 +204,9 @@ def download(note_id):
     if not note:
         return "File not found", 404
 
-    return redirect(note[0])   # simple + stable
+    file_url = note[5]   # ✅ CORRECT COLUMN
+
+    return redirect(file_url + "?fl_attachment=true")
 
 
 if __name__ == "__main__":
