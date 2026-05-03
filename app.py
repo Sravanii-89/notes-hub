@@ -257,16 +257,6 @@ def download(note_id):
     conn.close()
 
     return redirect(file_url + "?fl_attachment=true")
-@app.route("/clear")
-def clear_notes():
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM notes")
-    conn.commit()
-    cur.close()
-    conn.close()
-    return "All notes deleted"
-
 
 if __name__ == "__main__":
     app.run(debug=True)

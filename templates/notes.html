@@ -21,7 +21,10 @@
     <h3>{{ note[1] }}</h3>
 
     <!-- GOOGLE PDF VIEWER -->
-     <iframe src="{{ note[2] }}" class="pdf-viewer"></iframe>
+     <iframe 
+src="https://mozilla.github.io/pdf.js/web/viewer.html?file={{ note[2] }}"
+class="pdf-viewer">
+</iframe>
 
     <a href="/download/{{ note[0] }}">
         <button>📥 Download</button>
