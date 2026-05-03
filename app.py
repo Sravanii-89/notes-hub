@@ -8,12 +8,12 @@ import cloudinary.uploader
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
-# ---------- DB ----------
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_db():
     return psycopg2.connect(DATABASE_URL, sslmode="require")
 
+# ---------- INIT DB ----------
 def init_db():
     conn = get_db()
     cur = conn.cursor()
@@ -53,7 +53,7 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
-# ---------- SUBJECT DATA (FIXED) ----------
+# ---------- SUBJECT DATA ----------
 subjects_data = {
     "CSE": {
         "1": ["Engineering Physics","Engineering Chemistry","Mathematics I","Programming in C","English","Engineering Graphics"],
@@ -94,56 +94,26 @@ subjects_data = {
 }
 
 # ---------- ROUTES ----------
+
 @app.route("/", methods=["GET","POST"])
 def login():
     if request.method == "POST":
         conn = get_db()
         cur = conn.cursor()
 
-        email = request.form["email"]
-        password = request.form["password"]
-
-        cur.execute("SELECT * FROM users WHERE email=%s", (email,))
+        cur.execute("SELECT * FROM users WHERE email=%s", (request.form["email"],))
         user = cur.fetchone()
 
         cur.close()
         conn.close()
 
-        if user and check_password_hash(user[3], password):
+        if user and check_password_hash(user[3], request.form["password"]):
             session["user_id"] = user[0]
             return redirect("/home")
 
         return "Invalid login"
 
     return render_template("login.html")
-
-
-@app.route("/register", methods=["GET","POST"])
-def register():
-    if request.method == "POST":
-        conn = get_db()
-        cur = conn.cursor()
-
-        try:
-            cur.execute("""
-                INSERT INTO users(name,email,password,branch,year)
-                VALUES(%s,%s,%s,%s,%s)
-            """, (
-                request.form["name"],
-                request.form["email"],
-                generate_password_hash(request.form["password"]),
-                request.form["branch"],
-                request.form["year"]
-            ))
-            conn.commit()
-        except:
-            return "Email exists"
-
-        cur.close()
-        conn.close()
-        return redirect("/")
-
-    return render_template("register.html")
 
 
 @app.route("/home")
@@ -182,6 +152,7 @@ def notes(branch, year, subject):
     return render_template("notes.html", notes=notes, branch=branch, year=year, subject=subject)
 
 
+# ---------- UPLOAD ----------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
     if request.method == "GET":
@@ -192,10 +163,6 @@ def upload():
             subject=request.args.get("subject")
         )
 
-    title = request.form["title"]
-    branch = request.form["branch"]
-    year = request.form["year"]
-    subject = request.form["subject"]
     file = request.files["file"]
 
     result = cloudinary.uploader.upload(file, resource_type="auto")
@@ -207,21 +174,28 @@ def upload():
     cur.execute("""
         INSERT INTO notes (title, branch, year, subject, file_path)
         VALUES (%s, %s, %s, %s, %s)
-    """, (title, branch, year, subject, file_url))
+    """, (
+        request.form["title"],
+        request.form["branch"],
+        request.form["year"],
+        request.form["subject"],
+        file_url
+    ))
 
     conn.commit()
     cur.close()
     conn.close()
 
-    return redirect(f"/notes/{branch}/{year}/{subject}")
+    return redirect(f"/notes/{request.form['branch']}/{request.form['year']}/{request.form['subject']}")
 
 
+# ---------- DOWNLOAD ----------
 @app.route("/download/<int:note_id>")
 def download(note_id):
     conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("SELECT title, file_path FROM notes WHERE id=%s", (note_id,))
+    cur.execute("SELECT file_path FROM notes WHERE id=%s", (note_id,))
     note = cur.fetchone()
 
     cur.close()
@@ -230,7 +204,7 @@ def download(note_id):
     if not note:
         return "File not found", 404
 
-    return redirect(note[1])
+    return redirect(note[0])   # simple + stable
 
 
 if __name__ == "__main__":
