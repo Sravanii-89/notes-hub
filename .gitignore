@@ -1,33 +1,7 @@
-<<<<<<< HEAD
-.venv/
 __pycache__/
+*.pyc
 .env
+.venv/
 instance/
-*.zip
-*.db
-*.code-workspace
-=======
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-env.bak/
-venv.bak/
-.venv.bak/
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Secrets
-.env
-.env.local
-.env.*.local
-
-# IDE
 .vscode/
 .idea/
->>>>>>> 65b7fe58df50f55dccba2fa9525b314c0579cef1

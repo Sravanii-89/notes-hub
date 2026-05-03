@@ -21,10 +21,7 @@
     <h3>{{ note[1] }}</h3>
 
     <!-- GOOGLE PDF VIEWER -->
-    <iframe 
-        src="https://docs.google.com/gview?url={{ note[2] }}&embedded=true"
-        class="pdf-viewer">
-    </iframe>
+     <iframe src="{{ note[2] }}" class="pdf-viewer"></iframe>
 
     <a href="/download/{{ note[0] }}">
         <button>📥 Download</button>
