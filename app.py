@@ -189,7 +189,8 @@ def upload():
     return redirect(f"/notes/{request.form['branch']}/{request.form['year']}/{request.form['subject']}")
 
 
-# ---------- DOWNLOAD ----------
+# ---------- DOWNLOAD ----------from flask import redirect
+
 @app.route('/download/<int:id>')
 def download(id):
     conn = get_db()
@@ -204,9 +205,11 @@ def download(id):
     if not note:
         return "File not found", 404
 
-    file_url = note[5]   # ✅ CORRECT COLUMN
+    file_url = note[5]  # correct column
+    filename = note[1] + ".pdf"  # use title as filename
 
-    return redirect(file_url + "?fl_attachment=true")
+    # ✅ FORCE correct download name + extension
+    return redirect(file_url + f"?fl_attachment={filename}")
 
 
 if __name__ == "__main__":
