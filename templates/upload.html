@@ -11,9 +11,9 @@
     <input type="text" name="title" required>
 
     <!-- FIX: hidden values -->
-    <input type="text" name="branch" value="{{ branch }}" readonly>
-<input type="text" name="year" value="{{ year }}" readonly>
-<input type="text" name="subject" value="{{ subject }}" readonly>
+<input type="hidden" name="branch" value="{{ branch }}">
+<input type="hidden" name="year" value="{{ year }}">
+<input type="hidden" name="subject" value="{{ subject }}">
 
     <label>Upload PDF</label>
     <input type="file" name="file" accept="application/pdf" required>

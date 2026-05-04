@@ -12,18 +12,20 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "secret")
 
 # -----------------------------
-# DATABASE FIX (IMPORTANT)
+# DATABASE
 # -----------------------------
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-conn = psycopg2.connect(DATABASE_URL, sslmode="require")
-cur = conn.cursor()
+
+def get_db():
+    return psycopg2.connect(DATABASE_URL, sslmode="require")
+
 
 # -----------------------------
-# CLOUDINARY CONFIG
+# CLOUDINARY
 # -----------------------------
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
@@ -34,6 +36,9 @@ cloudinary.config(
 # -----------------------------
 # INIT TABLES
 # -----------------------------
+conn = get_db()
+cur = conn.cursor()
+
 cur.execute("""
 CREATE TABLE IF NOT EXISTS users(
     id SERIAL PRIMARY KEY,
@@ -57,6 +62,8 @@ CREATE TABLE IF NOT EXISTS notes(
 """)
 
 conn.commit()
+cur.close()
+conn.close()
 
 # -----------------------------
 # LOGIN
@@ -64,13 +71,16 @@ conn.commit()
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+        conn = get_db()
+        cur = conn.cursor()
 
-        cur.execute("SELECT * FROM users WHERE email=%s", (email,))
+        cur.execute("SELECT * FROM users WHERE email=%s", (request.form["email"],))
         user = cur.fetchone()
 
-        if user and check_password_hash(user[3], password):
+        cur.close()
+        conn.close()
+
+        if user and check_password_hash(user[3], request.form["password"]):
             session["user_id"] = user[0]
             return redirect("/home")
 
@@ -86,6 +96,9 @@ def login():
 def register():
     if request.method == "POST":
         try:
+            conn = get_db()
+            cur = conn.cursor()
+
             cur.execute(
                 "INSERT INTO users (name,email,password,branch,year) VALUES (%s,%s,%s,%s,%s)",
                 (
@@ -97,6 +110,10 @@ def register():
                 )
             )
             conn.commit()
+
+            cur.close()
+            conn.close()
+
             return redirect("/")
         except:
             return "User already exists"
@@ -105,7 +122,7 @@ def register():
 
 
 # -----------------------------
-# HOME (BRANCHES)
+# HOME
 # -----------------------------
 @app.route("/home")
 def home():
@@ -141,37 +158,39 @@ def year(branch, year):
 
 
 # -----------------------------
-# NOTES PAGE
+# NOTES
 # -----------------------------
 @app.route("/notes/<branch>/<year>/<subject>")
 def notes(branch, year, subject):
+    conn = get_db()
+    cur = conn.cursor()
+
     cur.execute(
         "SELECT * FROM notes WHERE branch=%s AND year=%s AND subject=%s",
         (branch, year, subject)
     )
     data = cur.fetchall()
 
-    return render_template(
-        "notes.html",
-        notes=data,
-        branch=branch,
-        year=year,
-        subject=subject
-    )
+    cur.close()
+    conn.close()
+
+    return render_template("notes.html", notes=data, branch=branch, year=year, subject=subject)
 
 
 # -----------------------------
-# UPLOAD
+# UPLOAD (FIXED)
 # -----------------------------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
-    branch = request.args.get("branch")
-    year = request.args.get("year")
-    subject = request.args.get("subject")
-
     if request.method == "POST":
         try:
+            conn = get_db()
+            cur = conn.cursor()
+
             title = request.form["title"]
+            branch = request.form["branch"]
+            year = request.form["year"]
+            subject = request.form["subject"]
             file = request.files["file"]
 
             result = cloudinary.uploader.upload(file, resource_type="raw")
@@ -183,35 +202,52 @@ def upload():
             )
             conn.commit()
 
+            cur.close()
+            conn.close()
+
             return redirect(f"/notes/{branch}/{year}/{subject}")
 
         except Exception as e:
             return f"Upload Error: {str(e)}"
 
-    return render_template("upload.html", branch=branch, year=year, subject=subject)
+    # GET
+    return render_template(
+        "upload.html",
+        branch=request.args.get("branch"),
+        year=request.args.get("year"),
+        subject=request.args.get("subject")
+    )
 
 
 # -----------------------------
-# DOWNLOAD (FINAL FIX)
+# DOWNLOAD (FIXED)
 # -----------------------------
 @app.route("/download/<int:id>")
 def download(id):
+    conn = get_db()
+    cur = conn.cursor()
+
     cur.execute("SELECT * FROM notes WHERE id=%s", (id,))
     note = cur.fetchone()
 
+    cur.close()
+    conn.close()
+
     if not note:
-        return "File not found"
+        return "File not found", 404
 
     file_url = note[5]
 
-    response = requests.get(file_url)
-
-    return send_file(
-        BytesIO(response.content),
-        as_attachment=True,
-        download_name="notes.pdf",
-        mimetype="application/pdf"
-    )
+    try:
+        response = requests.get(file_url)
+        return send_file(
+            BytesIO(response.content),
+            as_attachment=True,
+            download_name="notes.pdf",
+            mimetype="application/pdf"
+        )
+    except Exception as e:
+        return f"Download failed: {str(e)}", 500
 
 
 # -----------------------------
