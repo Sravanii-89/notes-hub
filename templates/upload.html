@@ -10,10 +10,36 @@
     <label>Title</label>
     <input type="text" name="title" required>
 
-    <!-- FIX: hidden values -->
-<input type="hidden" name="branch" value="{{ branch }}">
-<input type="hidden" name="year" value="{{ year }}">
-<input type="hidden" name="subject" value="{{ subject }}">
+    {% if branch and year and subject %}
+        <input type="hidden" name="branch" value="{{ branch }}">
+        <input type="hidden" name="year" value="{{ year }}">
+        <input type="hidden" name="subject" value="{{ subject }}">
+
+        <div class="info-row">
+            <span>Branch: <strong>{{ branch }}</strong></span>
+            <span>Year: <strong>{{ year }}</strong></span>
+            <span>Subject: <strong>{{ subject }}</strong></span>
+        </div>
+    {% else %}
+        <label>Branch</label>
+        <select name="branch" required>
+            <option value="">Select branch</option>
+            {% for b in branches %}
+                <option value="{{ b }}">{{ b }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Year</label>
+        <select name="year" required>
+            <option value="">Select year</option>
+            {% for y in years %}
+                <option value="{{ y }}">{{ y }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Subject</label>
+        <input type="text" name="subject" placeholder="Enter subject" required>
+    {% endif %}
 
     <label>Upload PDF</label>
     <input type="file" name="file" accept="application/pdf" required>

@@ -57,8 +57,14 @@ CREATE TABLE IF NOT EXISTS notes(
     branch TEXT,
     year TEXT,
     subject TEXT,
-    file_url TEXT
+    file_url TEXT,
+    filename TEXT
 )
+""")
+
+cur.execute("""
+ALTER TABLE notes
+ADD COLUMN IF NOT EXISTS filename TEXT
 """)
 
 conn.commit()
@@ -182,23 +188,36 @@ def notes(branch, year, subject):
 # -----------------------------
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
+    branches = ["CSE", "ECE", "EEE", "MECH", "IT", "CIVIL"]
+    years = ["1", "2", "3", "4"]
+
     if request.method == "POST":
         try:
+            if "file" not in request.files:
+                return "Upload Error: No file selected", 400
+
+            file = request.files["file"]
+            if file.filename == "":
+                return "Upload Error: No file selected", 400
+
+            title = request.form.get("title", "Untitled")
+            branch = request.form.get("branch")
+            year = request.form.get("year")
+            subject = request.form.get("subject")
+
+            if not branch or not year or not subject:
+                return "Upload Error: Branch, year, and subject are required.", 400
+
             conn = get_db()
             cur = conn.cursor()
 
-            title = request.form["title"]
-            branch = request.form["branch"]
-            year = request.form["year"]
-            subject = request.form["subject"]
-            file = request.files["file"]
-
-            result = cloudinary.uploader.upload(file, resource_type="raw")
-            file_url = result["secure_url"]
+            result = cloudinary.uploader.upload(file, resource_type="auto")
+            file_url = result.get("secure_url")
+            filename = file.filename or "notes.pdf"
 
             cur.execute(
-                "INSERT INTO notes (title, branch, year, subject, file_url) VALUES (%s,%s,%s,%s,%s)",
-                (title, branch, year, subject, file_url)
+                "INSERT INTO notes (title, branch, year, subject, file_url, filename) VALUES (%s,%s,%s,%s,%s,%s)",
+                (title, branch, year, subject, file_url, filename)
             )
             conn.commit()
 
@@ -215,7 +234,9 @@ def upload():
         "upload.html",
         branch=request.args.get("branch"),
         year=request.args.get("year"),
-        subject=request.args.get("subject")
+        subject=request.args.get("subject"),
+        branches=branches,
+        years=years
     )
 
 
@@ -237,14 +258,18 @@ def download(id):
         return "File not found", 404
 
     file_url = note[5]
+    file_name = note[6] if len(note) > 6 and note[6] else f"{note[1]}.pdf"
 
     try:
-        response = requests.get(file_url)
+        response = requests.get(file_url, stream=True)
+        response.raise_for_status()
+
+        content_type = response.headers.get("Content-Type", "application/octet-stream")
         return send_file(
             BytesIO(response.content),
             as_attachment=True,
-            download_name="notes.pdf",
-            mimetype="application/pdf"
+            download_name=file_name,
+            mimetype=content_type
         )
     except Exception as e:
         return f"Download failed: {str(e)}", 500
