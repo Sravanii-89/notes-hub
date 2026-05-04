@@ -10,18 +10,27 @@
     <button type="submit">➕ Upload Notes</button>
 </form>
 
-{% for note in notes %}
-<div class="note-card">
-    <h3>{{ note[1] }}</h3>
+<br>
 
-    <!-- SAFE PDF PREVIEW -->
-    <iframe src="{{ note[5] }}" class="pdf-viewer"></iframe>
+{% if notes %}
+    {% for note in notes %}
+    <div class="note-card">
+        <h3>{{ note[1] }}</h3>
 
-    <!-- FIXED DOWNLOAD -->
-    <a href="/download/{{ note[0] }}">
-        <button>📥 Download</button>
-    </a>
-</div>
-{% endfor %}
+        <!-- PDF PREVIEW -->
+        <iframe src="{{ note[5] }}" class="pdf-viewer"></iframe>
+
+        <!-- DOWNLOAD -->
+        <a href="/download/{{ note[0] }}">
+            <button>📥 Download</button>
+        </a>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="note-card">
+        <h3>No Notes Uploaded Yet 😢</h3>
+        <p>Click "Upload Notes" to add one.</p>
+    </div>
+{% endif %}
 
 {% endblock %}
